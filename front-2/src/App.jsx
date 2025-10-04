@@ -10,8 +10,8 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Landing />} />
-                <Route path="/about" element={<Explore />} />
-                <Route path="/dashboard" element={<Dataset />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/datasets" element={<Dataset />} />
             </Routes>
         </Router>
     );

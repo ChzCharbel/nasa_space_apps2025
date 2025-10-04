@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import "./App.css";
 import { processDescriptions, 
     featureCards, 
     challengeCards,
@@ -191,7 +190,7 @@ const App = () => {
 
     return (
         <>
-            <style>{globalStyles}</style>
+            {/* <style>{globalStyles}</style> */}
             {/* Sticky navigation */}
             <nav className="navbar">
                 <div className="nav-container">
