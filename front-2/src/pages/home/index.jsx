@@ -7,6 +7,7 @@ import { processDescriptions,
     metrics,
     techPills
 } from './statics';
+import NavBar from '../../components/navbar'
 
 
 const svgIcon = (path) => (
@@ -192,17 +193,7 @@ const App = () => {
         <>
             {/* <style>{globalStyles}</style> */}
             {/* Sticky navigation */}
-            <nav className="navbar">
-                <div className="nav-container">
-                    <div className="brand">ExoDetect AI</div>
-                    <div className="nav-links">
-                        <a href="#features" onClick={(event) => handleSmoothScroll(event, '#features')}>Features</a>
-                        <a href="#demo" onClick={(event) => handleSmoothScroll(event, '#demo')}>Demo</a>
-                        <a href="#team" onClick={(event) => handleSmoothScroll(event, '#team')}>Team</a>
-                        <a className="primary-link" href="/app">Launch App</a>
-                    </div>
-                </div>
-            </nav>
+            <NavBar />
 
             <header>
                 <section className="hero" id="top" ref={heroRef}>
@@ -211,13 +202,18 @@ const App = () => {
                         <h1>Exoplanet Detection AI</h1>
                         <p>Finding New Worlds with Machine Learning</p>
                         <div className="hero-actions">
-                            <button
+                        <Link to="/explore" className="btn btn-primary">
+                            Explore Datasets
+                        </Link>
+
+                            {/* <button
                                 type="button"
                                 className="btn btn-primary"
                                 onClick={(event) => handleSmoothScroll(event, '#demo')}
                             >
+                                <Link to="/explore" className="btn btn-primary" />
                                 Explore Datasets
-                            </button>
+                            </button> */}
                             <button
                                 type="button"
                                 className="btn btn-secondary"

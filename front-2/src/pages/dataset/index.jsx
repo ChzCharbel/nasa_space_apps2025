@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import NavBar from '../../components/navbar';
 
 const Explore = () => {
   const [datasets, setDatasets] = useState([]);
@@ -22,7 +23,8 @@ const Explore = () => {
   }, []);
 
   return (
-    <main className="section">
+    <main>
+        <NavBar />
       <div className="container">
         <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>Explore Datasets</h1>
         <p className="section-subtext">Choose a dataset to start exploring and analyzing data.</p>
