@@ -195,12 +195,6 @@ const Dashboard = () => {
     <main>
       <NavBar />
       <div className="container">
-        <h1 className="section-title">Planet Detection Dashboard</h1>
-        <p className="section-subtext">
-          Enter astronomical data to analyze whether the object corresponds to a
-          planet using our trained ML model.
-        </p>
-
         {/* Input Form with Action Buttons */}
         <div className="input-section">
           <AstronomicalDataInput
