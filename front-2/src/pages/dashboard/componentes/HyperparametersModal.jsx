@@ -4,8 +4,10 @@ import { setHyperparameters } from "../store";
 
 const HyperparametersModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
-  const storedHyperparameters = useSelector((state) => state.dashboardStore.hyperparameters);
-  
+  const storedHyperparameters = useSelector(
+    (state) => state.dashboardStore.hyperparameters
+  );
+
   const [localParams, setLocalParams] = useState(storedHyperparameters);
 
   if (!isOpen) return null;
@@ -77,13 +79,16 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
     >
       <div
         style={{
-          backgroundColor: "var(--bg-card)",
+          backgroundColor: "rgba(26, 31, 58, 0.95)",
           borderRadius: "16px",
           maxWidth: "600px",
           width: "100%",
           maxHeight: "80vh",
           overflow: "hidden",
           border: "1px solid var(--glass-border)",
+          backdropFilter: "blur(20px)",
+          boxShadow:
+            "0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.1)",
           display: "flex",
           flexDirection: "column",
         }}
@@ -99,7 +104,9 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
             alignItems: "center",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+          >
             <svg
               width="24"
               height="24"
@@ -112,7 +119,9 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
               <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3" />
               <circle cx="12" cy="12" r="10" opacity="0.3" />
             </svg>
-            <h2 style={{ margin: 0, fontSize: "1.25rem" }}>Advanced Model Settings</h2>
+            <h2 style={{ margin: 0, fontSize: "1.25rem" }}>
+              Advanced Model Settings
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -127,10 +136,22 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor =
+                "rgba(255, 255, 255, 0.1)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -139,36 +160,75 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
 
         {/* Body */}
         <div style={{ padding: "1.5rem", overflowY: "auto", flex: 1 }}>
-          <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
-            Configure hyperparameters for the LightGBM model. These values will be used during grid search to find the best model configuration.
+          <p
+            style={{
+              color: "var(--text-secondary)",
+              marginBottom: "1.5rem",
+              fontSize: "0.9rem",
+            }}
+          >
+            Configure hyperparameters for the LightGBM model. These values will
+            be used during grid search to find the best model configuration.
           </p>
 
           {Object.entries(localParams).map(([paramName, values]) => (
             <div key={paramName} style={{ marginBottom: "1.5rem" }}>
               <div style={{ marginBottom: "0.5rem" }}>
-                <label style={{ fontWeight: "600", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>
-                  {paramName.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                <label
+                  style={{
+                    fontWeight: "600",
+                    color: "var(--text-primary)",
+                    display: "block",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  {paramName
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase())}
                 </label>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", margin: 0 }}>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    margin: 0,
+                  }}
+                >
                   {parameterDescriptions[paramName]}
                 </p>
               </div>
 
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "0.5rem",
+                  alignItems: "center",
+                }}
+              >
                 {values.map((value, index) => (
-                  <div key={index} style={{ display: "flex", gap: "0.25rem", alignItems: "center" }}>
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      gap: "0.25rem",
+                      alignItems: "center",
+                    }}
+                  >
                     <input
                       type="number"
                       value={value}
-                      onChange={(e) => handleArrayChange(paramName, index, e.target.value)}
+                      onChange={(e) =>
+                        handleArrayChange(paramName, index, e.target.value)
+                      }
                       style={{
                         width: "80px",
                         padding: "0.5rem",
                         border: "1px solid var(--glass-border)",
                         borderRadius: "6px",
-                        backgroundColor: "rgba(26, 31, 58, 0.5)",
+                        backgroundColor: "rgba(26, 31, 58, 0.8)",
                         color: "var(--text-primary)",
                         fontSize: "0.9rem",
+                        backdropFilter: "blur(10px)",
                       }}
                       step={paramName === "learning_rate" ? "0.01" : "1"}
                     />
@@ -186,7 +246,14 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
                         }}
                         title="Remove value"
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
                           <circle cx="12" cy="12" r="10" />
                           <line x1="15" y1="9" x2="9" y2="15" />
                           <line x1="9" y1="9" x2="15" y2="15" />
@@ -210,7 +277,14 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
                     gap: "0.25rem",
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
@@ -224,21 +298,44 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
             style={{
               marginTop: "1.5rem",
               padding: "1rem",
-              backgroundColor: "rgba(59, 130, 246, 0.1)",
-              border: "1px solid rgba(59, 130, 246, 0.3)",
+              backgroundColor: "rgba(59, 130, 246, 0.15)",
+              border: "1px solid rgba(59, 130, 246, 0.4)",
               borderRadius: "8px",
+              backdropFilter: "blur(10px)",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="16" x2="12" y2="12" />
                 <line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
               <strong style={{ fontSize: "0.9rem" }}>Note</strong>
             </div>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-              These hyperparameters will be sent to the backend with each analysis request. The model will use grid search to find the best combination of these values.
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+              }}
+            >
+              These hyperparameters will be sent to the backend with each
+              analysis request. The model will use grid search to find the best
+              combination of these values.
             </p>
           </div>
         </div>
@@ -273,7 +370,7 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
               className="btn btn-primary"
               style={{ flex: 1 }}
             >
-              Save Changes
+              Save
             </button>
           </div>
         </div>
