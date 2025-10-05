@@ -7,7 +7,7 @@ import { processDescriptions,
     metrics,
     techPills
 } from './statics';
-import NavBar from '../../components/navbar'
+import NavBar from '../../components/Navbar'
 
 
 const svgIcon = (path) => (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NavBar from "../../components/navbar";
+import NavBar from "../../components/Navbar";
 import AstronomicalDataInput from "../../components/AstronomicalDataInput";
 import DatasetActionButtons from "../../components/DatasetActionButtons";
 
