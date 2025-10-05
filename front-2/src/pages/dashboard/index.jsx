@@ -200,6 +200,8 @@ const Dashboard = () => {
           <AstronomicalDataInput
             formData={formData}
             handleInputChange={handleInputChange}
+            handleAnalyze={handleAnalyze}
+            isAnalyzing={isAnalyzing}
           />
           <div className="action-buttons-container">
             <DatasetActionButtons

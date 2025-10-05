@@ -1,6 +1,11 @@
 import React from "react";
 
-const AstronomicalDataInput = ({ formData, handleInputChange }) => {
+const AstronomicalDataInput = ({
+  formData,
+  handleInputChange,
+  handleAnalyze,
+  isAnalyzing,
+}) => {
   return (
     <div className="glass-card">
       <div
@@ -155,6 +160,101 @@ const AstronomicalDataInput = ({ formData, handleInputChange }) => {
           />
         </div>
       </div>
+
+      {/* Analysis Button */}
+      <div className="form-actions">
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleAnalyze}
+          disabled={isAnalyzing}
+        >
+          {isAnalyzing ? (
+            <>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{ animation: "spin 1s linear infinite" }}
+              >
+                <path d="M21 12a9 9 0 11-6.219-8.56" />
+              </svg>
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M9 11l3 3L22 4" />
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+              </svg>
+              Run Analysis
+            </>
+          )}
+        </button>
+      </div>
+
+      <style jsx>{`
+        .form-actions {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 1px solid var(--glass-border);
+        }
+
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.75rem 1.5rem;
+          border-radius: var(--radius-button);
+          border: 1px solid transparent;
+          font-size: 0.95rem;
+          font-weight: 500;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, var(--accent-green), #059669);
+          color: white;
+          border-color: var(--accent-green);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          background: linear-gradient(135deg, #059669, var(--accent-green));
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 };
