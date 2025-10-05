@@ -1,19 +1,36 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  setDataset,
+  setSelectedDataset,
+  setIsLoadingDatasets,
+  setIsUploading,
+  setIsAnalyzing,
+  setAnalyzedDataset,
+  setAnalysisResult,
+  setAnalysisType,
+  setDatasetTableError,
+  setCsvUploadError,
+  clearErrors,
+} from "../store";
 
 const DatasetActionButtons = () => {
   const dispatch = useDispatch();
 
   const [showDropdown, setShowDropdown] = useState(false);
-  // const [datasetSelected, setDatasetSelected] = useState(null);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
-  const datasets = useSelector((state) => state.dashboardStore.availableDatasets)
+  
+  const datasets = useSelector((state) => state.dashboardStore.availableDatasets);
+  const selectedDataset = useSelector((state) => state.dashboardStore.selectedDataset);
+  const isLoadingDatasets = useSelector((state) => state.dashboardStore.isLoadingDatasets);
+  const isUploading = useSelector((state) => state.dashboardStore.isUploading);
 
   const handleSelectDataset = async (datasetId) => {
-    useDispatch(setIsAnalyzing(true));
-    useDispatch(useDatasetTableError(""));
-    useDispatch(setSelectedDataset(datasetId));
+    dispatch(setIsLoadingDatasets(true));
+    dispatch(clearErrors());
+    dispatch(setSelectedDataset(datasetId));
+    setShowDropdown(false);
 
     try {
       const response = await fetch(
@@ -28,68 +45,91 @@ const DatasetActionButtons = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
-        setDatasetPreview(result);
-        setShowPreview(true);
+        // Load all rows (clean datasets already have classification)
+        const loadedData = result.data;
+        dispatch(setDataset(loadedData));
+        
+        // Auto-analyze the loaded dataset
+        dispatch(setIsAnalyzing(true));
+        try {
+          const analyzeResponse = await fetch("http://localhost:8000/analyze-dataset", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(loadedData),
+          });
+
+          if (analyzeResponse.ok) {
+            const analyzeResult = await analyzeResponse.json();
+            dispatch(setAnalyzedDataset(analyzeResult.analyzed_data));
+            dispatch(setAnalysisResult({
+              summary: analyzeResult.summary,
+              model_metrics: analyzeResult.model_metrics,
+            }));
+            dispatch(setAnalysisType("batch"));
+          }
+        } catch (analyzeErr) {
+          console.error("Auto-analysis failed:", analyzeErr);
+        } finally {
+          dispatch(setIsAnalyzing(false));
+        }
       } else {
-        setError("Failed to load dataset preview.");
+        dispatch(setDatasetTableError("Failed to load dataset. Please try again."));
       }
     } catch (err) {
-      setError("Error selecting the dataset");
+      dispatch(setDatasetTableError(`Error loading dataset: ${err.message}`));
     } finally {
-      setIsAnalyzing(false);
+      dispatch(setIsLoadingDatasets(false));
     }
   };
 
   const handleCSVUpload = async (file) => {
     if (file && file.type === "text/csv") {
+      dispatch(setIsUploading(true));
+      dispatch(clearErrors());
+      
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
           const csv = e.target.result;
           const lines = csv.split("\n").filter((line) => line.trim() !== "");
-          const headers = lines[0].split(",").map((h) => h.trim());
-
-          // Parse CSV and populate form (assuming first data row)
-          if (lines.length > 1) {
-            const data = lines[1].split(",").map((d) => d.trim());
-            const newFormData = {};
-
-            headers.forEach((header, index) => {
-              const key = header.toLowerCase().replace(/\s+/g, "");
-              if (data[index] && data[index] !== "") {
-                newFormData[key] = data[index];
-              }
-            });
-
-            setFormData((prev) => ({ ...prev, ...newFormData }));
-
-            // Upload to backend for analysis
-            setIsAnalyzing(true);
-            const response = await fetch("http://localhost:8000/upload-csv", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newFormData),
-            });
-
-            if (response.ok) {
-              const result = await response.json();
-              setAnalysisResult(result);
-            } else {
-              setError("Analysis failed. Please try again.");
-            }
-            setIsAnalyzing(false);
+          
+          if (lines.length < 2) {
+            dispatch(setCsvUploadError("CSV file is empty or invalid."));
+            dispatch(setIsUploading(false));
+            return;
           }
+
+          const headers = lines[0].split(",").map((h) => h.trim());
+          
+          // Parse CSV rows
+          const parsedData = [];
+          for (let i = 1; i < Math.min(lines.length, 11); i++) { // Take max 10 rows
+            const values = lines[i].split(",").map((v) => v.trim());
+            const row = {};
+            
+            headers.forEach((header, index) => {
+              const key = header.toLowerCase().replace(/\s+/g, "_");
+              const value = values[index];
+              // Try to parse as number, otherwise keep as string
+              row[key] = !isNaN(value) && value !== "" ? parseFloat(value) : value;
+            });
+            
+            parsedData.push(row);
+          }
+
+          dispatch(setDataset(parsedData));
+          dispatch(setSelectedDataset("csv-upload"));
         } catch (err) {
-          setError(`Error parsing CSV file: ${err.message}`);
-          setIsAnalyzing(false);
+          dispatch(setCsvUploadError(`Error parsing CSV file: ${err.message}`));
+        } finally {
+          dispatch(setIsUploading(false));
         }
       };
       reader.readAsText(file);
     } else {
-      setError("Please select a valid CSV file.");
+      dispatch(setCsvUploadError("Please select a valid CSV file."));
     }
   };
 
@@ -120,7 +160,7 @@ const DatasetActionButtons = () => {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setShowDropdown(false);
-    }, 150); // Small delay before hiding
+    }, 150);
   };
 
   const handleButtonClick = () => {
@@ -129,11 +169,11 @@ const DatasetActionButtons = () => {
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "text/csv") {
-      onCSVUpload(file);
-    } else {
-      alert("Please select a valid CSV file.");
+    if (file) {
+      handleCSVUpload(file);
     }
+    // Reset input so same file can be uploaded again
+    event.target.value = "";
   };
 
   return (
@@ -147,6 +187,22 @@ const DatasetActionButtons = () => {
           onClick={handleButtonClick}
           disabled={isLoadingDatasets}
         >
+          {isLoadingDatasets ? (
+            <>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{ marginRight: "0.5rem", animation: "spin 1s linear infinite" }}
+              >
+                <path d="M21 12a9 9 0 11-6.219-8.56" />
+              </svg>
+              Loading...
+            </>
+          ) : (
             <>
               <svg
                 width="16"
@@ -177,6 +233,7 @@ const DatasetActionButtons = () => {
                 <polyline points="6,9 12,15 18,9" />
               </svg>
             </>
+          )}
         </button>
 
         {showDropdown && (
@@ -189,7 +246,7 @@ const DatasetActionButtons = () => {
               <div
                 key={dataset.id}
                 className={`dataset-option ${
-                  datasetSelected === dataset.id ? "selected" : ""
+                  selectedDataset === dataset.id ? "selected" : ""
                 }`}
                 onClick={() => handleSelectDataset(dataset.id)}
               >
@@ -197,7 +254,7 @@ const DatasetActionButtons = () => {
                   <h4>{dataset.name}</h4>
                   <p>{dataset.description}</p>
                 </div>
-                {datasetSelected === dataset.id && (
+                {selectedDataset === dataset.id && (
                   <svg
                     width="16"
                     height="16"
@@ -217,27 +274,47 @@ const DatasetActionButtons = () => {
 
       {/* Import CSV Button */}
       <label className="btn btn-secondary csv-upload-btn">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          style={{ marginRight: "0.5rem" }}
-        >
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14,2 14,8 20,8" />
-          <line x1="16" y1="13" x2="8" y2="13" />
-          <line x1="16" y1="17" x2="8" y2="17" />
-          <polyline points="10,9 9,9 8,9" />
-        </svg>
-        Import CSV
+        {isUploading ? (
+          <>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              style={{ marginRight: "0.5rem", animation: "spin 1s linear infinite" }}
+            >
+              <path d="M21 12a9 9 0 11-6.219-8.56" />
+            </svg>
+            Uploading...
+          </>
+        ) : (
+          <>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              style={{ marginRight: "0.5rem" }}
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10,9 9,9 8,9" />
+            </svg>
+            Import CSV
+          </>
+        )}
         <input
           type="file"
           accept=".csv"
           onChange={handleFileUpload}
           style={{ display: "none" }}
+          disabled={isUploading}
         />
       </label>
 
@@ -313,6 +390,15 @@ const DatasetActionButtons = () => {
           }
         }
 
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
         .dataset-option {
           display: flex;
           align-items: center;
@@ -347,15 +433,6 @@ const DatasetActionButtons = () => {
           margin: 0;
           color: var(--text-secondary);
           font-size: 0.85rem;
-        }
-
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
         }
 
         @media (max-width: 768px) {

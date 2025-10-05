@@ -1,91 +1,81 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  setFormData,
-  setIsAnalyzing,
-  setAnalyzedDataset,
-  setAnalysisResult,
-  getAnalysisResult,
-  setResultsError,
+  updateFormValue,
+  addObservationToDataset,
+  setFormDataError,
+  clearErrors,
 } from "../store";
 import "../styles/formStyles.css";
 
 const AstronomicalDataInput = () => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const formData = useSelector((state) => state.dashboardStore.formData);
-  const isAnalyzing = useSelector((state) => state.dashboardStore.isAnalyzing);
+  const formFields = useSelector((state) => state.dashboardStore.formFields);
+  const formValues = useSelector((state) => state.dashboardStore.formValues);
+  const formDataError = useSelector((state) => state.dashboardStore.formDataError);
 
-  // 🧠 Split fields into top 10 and the rest
-  const [topFields, secondaryFields] = useMemo(() => {
-    const entries = Object.entries(formData);
-    const formatted = entries.map(([key, value]) => ({
-      key,
-      label: key.replace(/_/g, " "), // make it human-readable
-      step: "any",
-      value,
-    }));
-
-    const top = formatted.slice(0, 10);
-    const secondary = formatted.slice(10);
-    return [top, secondary];
-  }, [formData]);
+  // Split fields into top 10 and the rest
+  const topFields = formFields.slice(0, 10);
+  const secondaryFields = formFields.slice(10);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const updatedFormData = {
-      ...formData,
-      [name]: value,
-    };
-    dispatch(setFormData(updatedFormData));
+    dispatch(updateFormValue({ key: name, value: parseFloat(value) || 0 }));
+    // Clear error when user starts editing
+    if (formDataError) {
+      dispatch(clearErrors());
+    }
   };
 
-  const handleAnalyzeDataset = async () => {
-    dispatch(setIsAnalyzing(true));
-    dispatch(setResultsError(""));
-
-    try {
-      const response = await fetch("http://localhost:8000/analyze-observation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        dispatch(setAnalyzedDataset(result));
-
-        try {
-          const analysis = getAnalysisResult(result);
-          dispatch(setAnalysisResult(analysis));
-        } catch (err) {
-          console.error("Error getting analysis: ", err);
-        }
-      } else {
-        dispatch(setResultsError("Analysis failed. Please try again."));
+  const validateForm = () => {
+    // Check if all required fields have values
+    const requiredFields = formFields.filter(field => field.required);
+    for (let field of requiredFields) {
+      if (!formValues[field.key] && formValues[field.key] !== 0) {
+        dispatch(setFormDataError(`${field.label} is required`));
+        return false;
       }
-    } catch (err) {
-      dispatch(setResultsError(`Analysis failed: ${err.message}`));
-    } finally {
-      dispatch(setIsAnalyzing(false));
     }
+    return true;
+  };
+
+  const handleAddToDataset = () => {
+    dispatch(clearErrors());
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    // Create a copy of the current form values
+    const observation = { ...formValues };
+    
+    // Add to dataset
+    dispatch(addObservationToDataset(observation));
+    
+    // Show success notification
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+    
+    // Optionally clear form or keep values for quick entry
+    // For now, keeping values to allow similar observations to be added quickly
   };
 
   const renderField = (field) => (
     <div key={field.key} className="form-group">
       <label htmlFor={field.key}>
         <strong>{field.label}</strong>
+        {field.required && <span style={{ color: 'var(--accent-red, #ef4444)', marginLeft: '4px' }}>*</span>}
       </label>
       <input
         type="number"
         id={field.key}
         name={field.key}
-        value={formData[field.key] || ""}
+        value={formValues[field.key] || ""}
         onChange={handleInputChange}
-        placeholder=""
+        placeholder={`Enter ${field.label.toLowerCase()}`}
         step={field.step}
       />
     </div>
@@ -116,6 +106,49 @@ const AstronomicalDataInput = () => {
           Astronomical Data Input
         </h2>
       </div>
+
+      {/* Success notification */}
+      {showSuccess && (
+        <div style={{
+          padding: '0.75rem 1rem',
+          marginBottom: '1rem',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: '8px',
+          color: 'var(--accent-green, #10b981)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          Observation added to dataset successfully!
+        </div>
+      )}
+
+      {/* Error notification */}
+      {formDataError && (
+        <div style={{
+          padding: '0.75rem 1rem',
+          marginBottom: '1rem',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '8px',
+          color: 'var(--accent-red, #ef4444)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+          {formDataError}
+        </div>
+      )}
 
       <div className="form-content">
         {/* Top priority fields - always visible */}
@@ -156,46 +189,26 @@ const AstronomicalDataInput = () => {
           >
             <path d="M6 9l6 6 6-6" />
           </svg>
-          {isExpanded ? "Show Less" : "See More Fields"}
+          {isExpanded ? "Show Less" : "Show More Fields"}
         </button>
 
         <button
           type="button"
           className="btn btn-primary"
-          onClick={handleAnalyzeDataset}
-          disabled={isAnalyzing}
+          onClick={handleAddToDataset}
         >
-          {isAnalyzing ? (
-            <>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                style={{ animation: "spin 1s linear infinite" }}
-              >
-                <path d="M21 12a9 9 0 11-6.219-8.56" />
-              </svg>
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M9 11l3 3L22 4" />
-                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-              </svg>
-              Run Analysis
-            </>
-          )}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Add to Dataset
         </button>
       </div>
     </div>

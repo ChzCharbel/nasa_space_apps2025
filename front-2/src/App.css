@@ -257,12 +257,7 @@ section.hero {
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
   padding: 1.75rem;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 40px rgba(10, 13, 35, 0.55);
+  /* Removed hover animations for better performance */
 }
 
 .cards-grid {

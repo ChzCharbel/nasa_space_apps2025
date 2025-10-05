@@ -2,12 +2,13 @@
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List, Dict
+from datetime import datetime
 import csv
 import json
 
 from services.datasets import get_dataset_objects, select_clean_dataset
 from services.analisis import analyze_observation, analyze_full_dataset
-
 
 
 app = FastAPI()
@@ -47,18 +48,69 @@ def select_dataset(datasetId: str):
     return result
 
 @app.post("/analyze-dataset")
-async def handle_observation():
-    observation = "" # read body of request, should contain parameters in json obj
+async def handle_dataset_analysis(observations: List[Dict]):
+    """
+    Receives an array of observation objects from frontend
+    Each observation contains all the astronomical parameters
+    Returns the dataset with added 'classification' field for each row
+    Plus model performance metrics and summary statistics
+    """
+    try:
+        result = await analyze_full_dataset(observations)
+        
+        # Calculate classification counts
+        classifications = [r.get('classification') for r in result]
+        
+        # Calculate model metrics
+        confidences = [r.get('confidence', 0) for r in result]
+        avg_confidence = sum(confidences) / len(confidences) if confidences else 0
+        
+        return {
+            "status": "success",
+            "analyzed_data": result,
+            "summary": {
+                "total": len(result),
+                "planets": sum(1 for c in classifications if c == 3),
+                "candidates": sum(1 for c in classifications if c == 2),
+                "ambiguous": sum(1 for c in classifications if c == 1),
+                "non_planets": sum(1 for c in classifications if c == 0)
+            },
+            "model_metrics": {
+                "average_confidence": avg_confidence,
+                "low_confidence_count": sum(1 for c in confidences if c < 0.7),
+                "high_confidence_count": sum(1 for c in confidences if c >= 0.9),
+                "model_version": "1.0",
+                "timestamp": datetime.now().isoformat()
+            }
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
-    result = analyze_observation(observation)
-
-
-    return ""
+@app.post("/analyze-observation")
+async def handle_observation_analysis(observation: Dict):
+    """
+    Receives a single observation object from frontend
+    Returns detailed classification with explanation
+    """
+    try:
+        result = await analyze_observation(observation)
+        return {
+            "status": "success",
+            "classification": result["classification"],
+            "confidence": result["confidence"],
+            "probabilities": result.get("probabilities", []),
+            "feature_importance": result.get("feature_importance", []),
+            "explanation": result.get("explanation", ""),
+            "details": result.get("details", {})
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 @app.post("/upload-csv")
 async def handle_dataset_upload(file: UploadFile = File(...)):
     contents = await file.read()
-
-    result = analyze_full_dataset(contents)
-
-    return ""
+    
+    # This endpoint can be used for validation if needed
+    # For now, frontend handles CSV parsing
+    
+    return {"status": "success", "message": "CSV received"}
