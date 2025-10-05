@@ -279,8 +279,8 @@ section.hero {
 }
 
 .card-icon {
-  width: 48px;
-  height: 48px;
+  width: 8rem;
+  height: 6rem;
   margin-bottom: 1.25rem;
   display: inline-flex;
   align-items: center;

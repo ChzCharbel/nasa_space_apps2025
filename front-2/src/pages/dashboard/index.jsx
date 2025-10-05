@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NavBar from "../../components/navbar";
+import NavBar from "../../components/Navbar";
 import AstronomicalDataInput from "../../components/AstronomicalDataInput";
 import DatasetActionButtons from "../../components/DatasetActionButtons";
 
@@ -454,6 +454,8 @@ const Dashboard = () => {
           <AstronomicalDataInput
             formData={formData}
             handleInputChange={handleInputChange}
+            handleAnalyze={handleAnalyze}
+            isAnalyzing={isAnalyzing}
           />
           <div className="action-buttons-container">
             <DatasetActionButtons
