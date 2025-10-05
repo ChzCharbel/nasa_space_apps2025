@@ -1,12 +1,17 @@
 .planetary-background {
   position: fixed;
-  top: -50px;
-  left: -50px;
-  width: 400px;
-  height: 400px;
+  top: -80px;
+  left: -80px;
+  width: 600px;
+  height: 600px;
   z-index: 0;
-  opacity: 0.3;
+  opacity: 0.7;
   pointer-events: none;
+  transform: rotate(25deg);
+  background-image: url('/imgs/starry_background.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .saturn-container {
@@ -30,8 +35,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 180px;
-  height: 180px;
+  width: 280px;
+  height: 280px;
 }
 
 .saturn-body {
@@ -39,13 +44,13 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle at 30% 30%, #f4d47c, #e8b84d, #d4a144);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle at 30% 30%, #c9a86a, #b8935e, #a67c52, #8b6846);
   border-radius: 50%;
   box-shadow: 
-    inset -20px -20px 40px rgba(0, 0, 0, 0.3),
-    0 0 60px rgba(244, 212, 124, 0.4);
+    inset -30px -30px 60px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(200, 168, 106, 0.6);
   animation: rotate 20s linear infinite;
 }
 
@@ -54,15 +59,15 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotateX(75deg);
-  width: 320px;
-  height: 320px;
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
-  border: 25px solid transparent;
-  border-top-color: rgba(200, 170, 120, 0.6);
-  border-bottom-color: rgba(200, 170, 120, 0.3);
+  border: 35px solid transparent;
+  border-top-color: rgba(166, 124, 82, 0.8);
+  border-bottom-color: rgba(166, 124, 82, 0.5);
   box-shadow: 
-    0 0 20px rgba(200, 170, 120, 0.4),
-    inset 0 0 20px rgba(200, 170, 120, 0.2);
+    0 0 30px rgba(166, 124, 82, 0.6),
+    inset 0 0 30px rgba(166, 124, 82, 0.3);
   animation: ringRotate 30s linear infinite;
 }
 
@@ -72,12 +77,12 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 280px;
-  height: 280px;
+  width: 440px;
+  height: 440px;
   border-radius: 50%;
-  border: 15px solid transparent;
-  border-top-color: rgba(180, 150, 100, 0.4);
-  border-bottom-color: rgba(180, 150, 100, 0.2);
+  border: 20px solid transparent;
+  border-top-color: rgba(139, 104, 70, 0.6);
+  border-bottom-color: rgba(139, 104, 70, 0.3);
 }
 
 @keyframes rotate {
@@ -109,14 +114,14 @@
 }
 
 .moon-orbit-1 {
-  width: 280px;
-  height: 280px;
+  width: 420px;
+  height: 420px;
   animation: orbit1 12s linear infinite;
 }
 
 .moon-orbit-2 {
-  width: 360px;
-  height: 360px;
+  width: 540px;
+  height: 540px;
   animation: orbit2 18s linear infinite reverse;
 }
 
@@ -151,8 +156,8 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   background: radial-gradient(circle at 30% 30%, #e8e8f0, #b8b8d0, #9090b0);
 }
 
@@ -160,51 +165,11 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 15px;
-  height: 15px;
+  width: 22px;
+  height: 22px;
   background: radial-gradient(circle at 30% 30%, #f0f0f8, #c8c8e0, #a0a0c0);
 }
 
-/* Twinkling stars */
-.planetary-background::before,
-.planetary-background::after {
-  content: '';
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 
-    50px 30px 0 white,
-    100px 80px 0 white,
-    150px 50px 0 rgba(255, 255, 255, 0.8),
-    200px 120px 0 rgba(255, 255, 255, 0.6),
-    80px 150px 0 white,
-    250px 180px 0 rgba(255, 255, 255, 0.7),
-    300px 90px 0 rgba(255, 255, 255, 0.5);
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-.planetary-background::after {
-  animation-delay: 1.5s;
-  box-shadow: 
-    70px 60px 0 rgba(255, 255, 255, 0.6),
-    120px 110px 0 white,
-    170px 80px 0 rgba(255, 255, 255, 0.7),
-    220px 150px 0 white,
-    110px 180px 0 rgba(255, 255, 255, 0.8),
-    270px 210px 0 rgba(255, 255, 255, 0.6),
-    320px 120px 0 rgba(255, 255, 255, 0.5);
-}
-
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
