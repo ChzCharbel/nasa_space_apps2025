@@ -3,48 +3,38 @@ import NavBar from "../../components/Navbar";
 import AstronomicalDataInput from "./componentes/AstronomicalDataInput";
 import DatasetActionButtons from "./componentes/DatasetActionButtons";
 import DatasetTable from "./componentes/DatasetTable";
+import Results from "./componentes/Results";
 import { mockData } from "./mockData";
-import './styles.css'
+import "./styles.css";
 
 const Dashboard = () => {
-  const [formData, setFormData] = useState(null)
-  const [availableDatasets, setAvailableDatasets] = useState(null)
-  const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
-  const [selectedDataset, setSelectedDataset] = useState(null)
-  const [observationResult, setObservationResult] = useState(null)
-  const [datasetResult, setDatasetResult] = useState(null)
+  const [formData, setFormData] = useState({
+    mass: "",
+    radius: "",
+    temperature: "",
+    orbitalPeriod: "",
+    semiMajorAxis: "",
+    eccentricity: "",
+    stellarMass: "",
+    stellarRadius: "",
+    stellarTemperature: "",
+  });
+  const [availableDatasets, setAvailableDatasets] = useState(null);
+  const [isLoadingDatasets, setIsLoadingDatasets] = useState(false);
+  const [selectedDataset, setSelectedDataset] = useState(null);
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [datasetPreview, setDatasetPreview] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [error, setError] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-
-  // const [formData, setFormData] = useState({
-  //   mass: "",
-  //   radius: "",
-  //   temperature: "",
-  //   orbitalPeriod: "",
-  //   semiMajorAxis: "",
-  //   eccentricity: "",
-  //   stellarMass: "",
-  //   stellarRadius: "",
-  //   stellarTemperature: "",
-  // });
-
-  // const [analysisResult, setAnalysisResult] = useState(null);
-  // const [error, setError] = useState("");
-  // const [showDatasetModal, setShowDatasetModal] = useState(false);
-  // const [availableDatasets, setAvailableDatasets] = useState([]); // eslint-disable-line no-unused-vars
-  // const [isLoadingDatasets, setIsLoadingDatasets] = useState(false); // eslint-disable-line no-unused-vars
-  // const [datasetPreview, setDatasetPreview] = useState(null);
-  // const [showPreview, setShowPreview] = useState(false);
-  // const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const loadAvailableDatasets = async () => {
-    setIsLoadingDatasets(true)
+    setIsLoadingDatasets(true);
     try {
       const response = await fetch("http://localhost:8000/datasets");
       if (response.ok) {
         const datasets = await response.json();
         setAvailableDatasets(datasets);
-        setShowDatasetModal(true);
       } else {
         setError("Failed to load datasets.");
       }
@@ -53,11 +43,11 @@ const Dashboard = () => {
     } finally {
       setIsLoadingDatasets(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadAvailableDatasets()
-  }, [])
+    loadAvailableDatasets();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,13 +62,16 @@ const Dashboard = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/analyze-observation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://localhost:8000/analyze-observation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -94,38 +87,43 @@ const Dashboard = () => {
   };
 
   const handleSelectDataset = async (datasetId) => {
-    setIsAnalyzing(true)
-    setError("")
+    setIsAnalyzing(true);
+    setError("");
+    setSelectedDataset(datasetId);
 
     try {
-      const response = await fetch("http://localhost:8000/select-dataset", {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        }, 
-        body: JSON.stringify(datasetId)
-      })
+      const response = await fetch(
+        `http://localhost:8000/select-dataset/${datasetId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
-        setAnalysisResult(result);
+        console.log(result);
+        setDatasetPreview(result);
+        setShowPreview(true);
       } else {
-        setError("Analysis failed. Please try again.");
+        setError("Failed to load dataset preview.");
       }
     } catch (err) {
-      setError("Error selecting the database")
+      setError("Error selecting the dataset");
     } finally {
-      setIsAnalyzing(false)
+      setIsAnalyzing(false);
     }
-  }
+  };
 
   const handleCSVUpload = async (file) => {
     if (file && file.type === "text/csv") {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const csv = e.target.result;
-          const lines = csv.split("\n");
+          const lines = csv.split("\n").filter((line) => line.trim() !== "");
           const headers = lines[0].split(",").map((h) => h.trim());
 
           // Parse CSV and populate form (assuming first data row)
@@ -140,23 +138,29 @@ const Dashboard = () => {
               }
             });
 
-            // setFormData((prev) => ({ ...prev, ...newFormData }));
+            setFormData((prev) => ({ ...prev, ...newFormData }));
+
+            // Upload to backend for analysis
+            setIsAnalyzing(true);
             const response = await fetch("http://localhost:8000/upload-csv", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(data)
-            })
+              body: JSON.stringify(newFormData),
+            });
+
             if (response.ok) {
               const result = await response.json();
               setAnalysisResult(result);
             } else {
               setError("Analysis failed. Please try again.");
             }
+            setIsAnalyzing(false);
           }
         } catch (err) {
           setError(`Error parsing CSV file: ${err.message}`);
+          setIsAnalyzing(false);
         }
       };
       reader.readAsText(file);
@@ -187,8 +191,11 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-grid">
-          <DatasetTable />
-          <Results />
+          <DatasetTable
+            showPreview={showPreview}
+            datasetPreview={datasetPreview}
+          />
+          <Results error={error} analysisResult={analysisResult} />
         </div>
       </div>
     </main>

@@ -6,7 +6,6 @@ const DatasetActionButtons = ({
   isLoadingDatasets = false,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [datasetSelected, setDatasetSelected] = useState(null);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
 
@@ -16,16 +15,7 @@ const DatasetActionButtons = ({
       name: "Kepler",
       description: "Kepler mission exoplanet data",
     },
-    {
-      id: "k2",
-      name: "K2",
-      description: "Kepler mission extended data",
-    },
-    {
-      id: "tess",
-      name: "TESS",
-      description: "TESS mission exoplanet data",
-    },
+    { id: "tess", name: "TESS", description: "TESS mission exoplanet data" },
   ];
 
   // Handle click outside to close dropdown
@@ -59,8 +49,7 @@ const DatasetActionButtons = ({
   };
 
   const handleDatasetClick = (dataset) => {
-    onDatasetSelect(dataset.id);
-    setDatasetSelected(dataset.id);
+    onDatasetSelect(dataset);
     setShowDropdown(false);
   };
 
@@ -140,27 +129,23 @@ const DatasetActionButtons = ({
             {datasets.map((dataset) => (
               <div
                 key={dataset.id}
-                className={`dataset-option ${
-                  datasetSelected === dataset.id ? "selected" : ""
-                }`}
+                className="dataset-option"
                 onClick={() => handleDatasetClick(dataset)}
               >
                 <div className="dataset-info">
                   <h4>{dataset.name}</h4>
                   <p>{dataset.description}</p>
                 </div>
-                {datasetSelected === dataset.id && (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M9 11l3 3L22 4" />
-                  </svg>
-                )}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M9 11l3 3L22 4" />
+                </svg>
               </div>
             ))}
           </div>
@@ -280,11 +265,6 @@ const DatasetActionButtons = ({
 
         .dataset-option:hover {
           background: rgba(59, 130, 246, 0.1);
-        }
-
-        .dataset-option.selected {
-          background: rgba(16, 185, 129, 0.1);
-          border-left: 3px solid var(--accent-green);
         }
 
         .dataset-info h4 {
