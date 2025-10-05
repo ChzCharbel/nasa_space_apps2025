@@ -64,7 +64,6 @@ const ModelSelector = () => {
           border: 1px solid var(--glass-border);
           border-radius: var(--radius-button);
           margin: 0;
-          flex: 1;
           min-height: 60px;
         }
 

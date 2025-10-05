@@ -14,10 +14,11 @@
   flex-shrink: 0;
   margin-top: 0; /* Align with the top of the form */
   min-width: 200px;
-  align-self: stretch; /* Make it stretch to match the height of the form */
+  align-self: stretch; /* Stretch to match the form height */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* Start from the top */
+  height: 100%; /* Take full height */
 }
 
 .dashboard-grid {

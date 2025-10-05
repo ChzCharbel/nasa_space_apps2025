@@ -362,7 +362,9 @@ const DatasetActionButtons = () => {
       </div>
 
       {/* Model Selector - Bottom Row */}
-      <ModelSelector />
+      <div style={{ flexShrink: 0 }}>
+        <ModelSelector />
+      </div>
 
       {/* Advanced Options Button - Bottom Row */}
       <button
@@ -372,7 +374,7 @@ const DatasetActionButtons = () => {
       >
         <svg
           width="18"
-          height="18"
+          height="47"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -400,19 +402,18 @@ const DatasetActionButtons = () => {
           gap: 0.75rem;
           width: 100%;
           height: 100%;
-          justify-content: space-between;
+          justify-content: flex-start;
         }
 
         .top-row {
           display: flex;
           gap: 0.75rem;
-          align-items: stretch;
-          flex: 1;
+          align-items: center;
+          flex-shrink: 0;
         }
 
         .dropdown-container {
           position: relative;
-          flex: 1;
         }
 
         .dataset-btn,
@@ -434,11 +435,14 @@ const DatasetActionButtons = () => {
           white-space: nowrap;
           height: auto;
           min-height: 60px;
-          flex: 1;
         }
 
         .settings-btn {
           width: 100%;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .dataset-btn:hover,
