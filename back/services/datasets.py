@@ -1,3 +1,5 @@
+import csv
+
 def get_dataset_objects():
     datasets = [
         {
@@ -36,3 +38,17 @@ def get_dataset_objects():
     ]
 
     return datasets
+
+def select_clean_dataset(datasetId):
+    csv_file = f"resources/clean/{datasetId}_clean.csv"
+    if (csv_file):
+        with open(csv_file, 'r') as file:
+            reader = csv.DictReader(file)
+            data = list(reader)
+            result = {
+                "status": 200,
+                "data": data
+            }
+            return result
+    return { "status": 400, "data": "" }
+    

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import csv
 import json
 
-from services.datasets import get_dataset_objects
+from services.datasets import get_dataset_objects, select_clean_dataset
 from services.analisis import analyze_observation, analyze_full_dataset
 
 
@@ -43,11 +43,8 @@ def fetch_datasets():
 
 @app.get("/select-dataset/{datasetId}")
 def select_dataset(datasetId: str):
-    csv_file = f"resources/clean/{datasetId}_clean.csv"
-    with open(csv_file, 'r') as file:
-        reader = csv.DictReader(file)
-        return list(reader)
-    return ""
+    result = select_clean_dataset(datasetId)
+    return result
 
 @app.post("/analyze-dataset")
 async def handle_observation():

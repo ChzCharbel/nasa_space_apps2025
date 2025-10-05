@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 const DatasetActionButtons = () => {
+  const dispatch = useDispatch();
+
   const [showDropdown, setShowDropdown] = useState(false);
-  const [datasetSelected, setDatasetSelected] = useState(null);
+  // const [datasetSelected, setDatasetSelected] = useState(null);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
   const datasets = useSelector((state) => state.dashboardStore.availableDatasets)
 
   const handleSelectDataset = async (datasetId) => {
-    setIsAnalyzing(true);
-    setError("");
-    setSelectedDataset(datasetId);
+    useDispatch(setIsAnalyzing(true));
+    useDispatch(useDatasetTableError(""));
+    useDispatch(setSelectedDataset(datasetId));
 
     try {
       const response = await fetch(
