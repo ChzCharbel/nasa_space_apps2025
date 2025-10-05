@@ -6,25 +6,7 @@ const DatasetActionButtons = () => {
   const [datasetSelected, setDatasetSelected] = useState(null);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
-  const isLoadingDatasets = useSelector((state) => state.dashboardStore.isLoadingDatasets)
-
-  const datasets = [
-    {
-      id: "kepler",
-      name: "Kepler",
-      description: "Kepler mission exoplanet data",
-    },
-    {
-      id: "k2",
-      name: "K2",
-      description: "Kepler mission extended data",
-    },
-    {
-      id: "tess",
-      name: "TESS",
-      description: "TESS mission exoplanet data",
-    },
-  ];
+  const datasets = useSelector((state) => state.dashboardStore.availableDatasets)
 
   const handleSelectDataset = async (datasetId) => {
     setIsAnalyzing(true);
@@ -143,12 +125,6 @@ const DatasetActionButtons = () => {
     setShowDropdown(!showDropdown);
   };
 
-  // const handleDatasetClick = (dataset) => {
-  //   onDatasetSelect(dataset.id);
-  //   setDatasetSelected(dataset.id);
-  //   // Don't close dropdown automatically - let user click outside to close
-  // };
-
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "text/csv") {
@@ -169,25 +145,6 @@ const DatasetActionButtons = () => {
           onClick={handleButtonClick}
           disabled={isLoadingDatasets}
         >
-          {isLoadingDatasets ? (
-            <>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                style={{
-                  animation: "spin 1s linear infinite",
-                  marginRight: "0.5rem",
-                }}
-              >
-                <path d="M21 12a9 9 0 11-6.219-8.56" />
-              </svg>
-              Loading...
-            </>
-          ) : (
             <>
               <svg
                 width="16"
@@ -218,7 +175,6 @@ const DatasetActionButtons = () => {
                 <polyline points="6,9 12,15 18,9" />
               </svg>
             </>
-          )}
         </button>
 
         {showDropdown && (

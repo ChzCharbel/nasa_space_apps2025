@@ -31,9 +31,21 @@ const dashboardStoreSlice = createSlice({
         { key: "pl_tranmiderr1", label: "Transit Midpoint Error", step: "0.1" }
     ],
     availableDatasets: [
-        { id: "kepler", name: "Kepler", description: "" },
-        { id: "k2", name: "K2", description: "" },
-        { id: "tess", name: "TESS", description: "" }
+        {
+          id: "kepler",
+          name: "Kepler",
+          description: "Kepler mission exoplanet data",
+        },
+        {
+          id: "k2",
+          name: "K2",
+          description: "Kepler mission extended data",
+        },
+        {
+          id: "tess",
+          name: "TESS",
+          description: "TESS mission exoplanet data",
+        },
     ],
     isLoadingDatasets: false,
     selectedDataset: "",
