@@ -308,13 +308,17 @@ const dashboardStoreSlice = createSlice({
     csvUploadError: "",
     resultsError: "",
 
-    // Model hyperparameters (for advanced users)
+    // Hyperparameters (shared by both models)
     hyperparameters: {
-      num_leaves: [15, 31, 63],
-      max_depth: [-1, 5, 10],
-      learning_rate: [0.01, 0.05, 0.1],
-      n_estimators: [100, 300, 500],
-      min_child_samples: [20, 50],
+      bagging_fraction: 0.8,
+      feature_fraction: 0.8,
+      lambda_l1: 0.0,
+      lambda_l2: 0.0,
+      learning_rate: 0.05,
+      max_depth: 10,
+      min_child_samples: 20,
+      n_estimators: 300,
+      num_leaves: 63,
     },
   },
   reducers: {
@@ -415,7 +419,7 @@ const dashboardStoreSlice = createSlice({
       state.resultsError = "";
     },
 
-    // Other
+    // Hyperparameters management
     setHyperparameters: (state, action) => {
       state.hyperparameters = action.payload;
     },

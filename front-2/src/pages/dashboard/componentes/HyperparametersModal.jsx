@@ -4,35 +4,18 @@ import { setHyperparameters } from "../store";
 
 const HyperparametersModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
+  const activeModel = useSelector((state) => state.dashboardStore.activeModel);
   const storedHyperparameters = useSelector(
     (state) => state.dashboardStore.hyperparameters
   );
-
   const [localParams, setLocalParams] = useState(storedHyperparameters);
 
   if (!isOpen) return null;
 
-  const handleArrayChange = (paramName, index, value) => {
-    const newArray = [...localParams[paramName]];
-    newArray[index] = parseFloat(value) || 0;
+  const handleValueChange = (paramName, value) => {
     setLocalParams({
       ...localParams,
-      [paramName]: newArray,
-    });
-  };
-
-  const handleAddValue = (paramName) => {
-    setLocalParams({
-      ...localParams,
-      [paramName]: [...localParams[paramName], 0],
-    });
-  };
-
-  const handleRemoveValue = (paramName, index) => {
-    const newArray = localParams[paramName].filter((_, i) => i !== index);
-    setLocalParams({
-      ...localParams,
-      [paramName]: newArray,
+      [paramName]: parseFloat(value) || 0,
     });
   };
 
@@ -42,22 +25,19 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
   };
 
   const handleReset = () => {
-    const defaultParams = {
-      num_leaves: [15, 31, 63],
-      max_depth: [-1, 5, 10],
-      learning_rate: [0.01, 0.05, 0.1],
-      n_estimators: [100, 300, 500],
-      min_child_samples: [20, 50],
-    };
-    setLocalParams(defaultParams);
+    setLocalParams(storedHyperparameters);
   };
 
   const parameterDescriptions = {
-    num_leaves: "Maximum number of leaves in one tree",
-    max_depth: "Maximum tree depth (-1 means no limit)",
-    learning_rate: "Boosting learning rate",
-    n_estimators: "Number of boosting iterations",
+    bagging_fraction: "Fraction of data used in each bagging iteration",
+    feature_fraction: "Fraction of features selected for each tree",
+    lambda_l1: "L1 regularization (Lasso) - prevents overfitting",
+    lambda_l2: "L2 regularization (Ridge) - prevents overfitting",
+    learning_rate: "Boosting learning rate - how fast the model learns",
+    max_depth: "Maximum tree depth - controls model complexity",
     min_child_samples: "Minimum number of data points in a leaf",
+    n_estimators: "Number of boosting iterations (trees)",
+    num_leaves: "Maximum number of leaves in one tree",
   };
 
   return (
@@ -167,11 +147,12 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
               fontSize: "0.9rem",
             }}
           >
-            Configure hyperparameters for the LightGBM model. These values will
-            be used during grid search to find the best model configuration.
+            Configure hyperparameters for the LightGBM models. These values will
+            be shared by both TESS and Kepler models and sent to the backend for
+            model training and prediction.
           </p>
 
-          {Object.entries(localParams).map(([paramName, values]) => (
+          {Object.entries(localParams).map(([paramName, value]) => (
             <div key={paramName} style={{ marginBottom: "1.5rem" }}>
               <div style={{ marginBottom: "0.5rem" }}>
                 <label
@@ -197,100 +178,26 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
                 </p>
               </div>
 
-              <div
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => handleValueChange(paramName, e.target.value)}
                 style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "0.5rem",
-                  alignItems: "center",
+                  width: "120px",
+                  padding: "0.5rem",
+                  border: "1px solid var(--glass-border)",
+                  borderRadius: "6px",
+                  backgroundColor: "rgba(26, 31, 58, 0.8)",
+                  color: "var(--text-primary)",
+                  fontSize: "0.9rem",
+                  backdropFilter: "blur(10px)",
                 }}
-              >
-                {values.map((value, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: "flex",
-                      gap: "0.25rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    <input
-                      type="number"
-                      value={value}
-                      onChange={(e) =>
-                        handleArrayChange(paramName, index, e.target.value)
-                      }
-                      style={{
-                        width: "80px",
-                        padding: "0.5rem",
-                        border: "1px solid var(--glass-border)",
-                        borderRadius: "6px",
-                        backgroundColor: "rgba(26, 31, 58, 0.8)",
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem",
-                        backdropFilter: "blur(10px)",
-                      }}
-                      step={paramName === "learning_rate" ? "0.01" : "1"}
-                    />
-                    {values.length > 1 && (
-                      <button
-                        onClick={() => handleRemoveValue(paramName, index)}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "var(--accent-red, #ef4444)",
-                          cursor: "pointer",
-                          padding: "0.25rem",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                        title="Remove value"
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="15" y1="9" x2="9" y2="15" />
-                          <line x1="9" y1="9" x2="15" y2="15" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  onClick={() => handleAddValue(paramName)}
-                  style={{
-                    padding: "0.5rem 0.75rem",
-                    border: "1px solid var(--glass-border)",
-                    borderRadius: "6px",
-                    backgroundColor: "rgba(59, 130, 246, 0.1)",
-                    color: "var(--accent-blue)",
-                    cursor: "pointer",
-                    fontSize: "0.85rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.25rem",
-                  }}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  Add
-                </button>
-              </div>
+                step={
+                  paramName.includes("rate") || paramName.includes("fraction")
+                    ? "0.01"
+                    : "1"
+                }
+              />
             </div>
           ))}
 
@@ -334,8 +241,8 @@ const HyperparametersModal = ({ isOpen, onClose }) => {
               }}
             >
               These hyperparameters will be sent to the backend with each
-              analysis request. The model will use grid search to find the best
-              combination of these values.
+              analysis request for both TESS and Kepler models. The same
+              hyperparameter configuration is used for both models.
             </p>
           </div>
         </div>
