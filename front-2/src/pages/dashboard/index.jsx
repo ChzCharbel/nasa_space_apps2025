@@ -16,13 +16,14 @@ const Dashboard = () => {
     stellarTemperature: "",
   });
 
-  const [analysisResult, setAnalysisResult] = useState(null); // eslint-disable-line no-unused-vars
+  const [analysisResult, setAnalysisResult] = useState(null);
   const [error, setError] = useState("");
   const [showDatasetModal, setShowDatasetModal] = useState(false);
   const [availableDatasets, setAvailableDatasets] = useState([]); // eslint-disable-line no-unused-vars
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false); // eslint-disable-line no-unused-vars
   const [datasetPreview, setDatasetPreview] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +31,32 @@ const Dashboard = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:8000/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setAnalysisResult(result);
+      } else {
+        setError("Analysis failed. Please try again.");
+      }
+    } catch (err) {
+      setError(`Analysis failed: ${err.message}`);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleCSVUpload = (file) => {
@@ -595,38 +622,37 @@ const Dashboard = () => {
                 </div>
 
                 <div className="preview-tabs">
-
                   <div className="tab-content">
-                      <div className="data-table-container">
-                        <table className="data-table">
-                          <thead>
-                            <tr>
+                    <div className="data-table-container">
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            {datasetPreview.columns
+                              .slice(0, 6)
+                              .map((col, index) => (
+                                <th key={index}>{col.name}</th>
+                              ))}
+                            <th>...</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {datasetPreview.sampleData.map((row, rowIndex) => (
+                            <tr key={rowIndex}>
                               {datasetPreview.columns
                                 .slice(0, 6)
-                                .map((col, index) => (
-                                  <th key={index}>{col.name}</th>
+                                .map((col, colIndex) => (
+                                  <td key={colIndex}>
+                                    {typeof row[col.name] === "number"
+                                      ? row[col.name].toFixed(3)
+                                      : row[col.name]}
+                                  </td>
                                 ))}
-                              <th>...</th>
+                              <td>...</td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {datasetPreview.sampleData.map((row, rowIndex) => (
-                              <tr key={rowIndex}>
-                                {datasetPreview.columns
-                                  .slice(0, 6)
-                                  .map((col, colIndex) => (
-                                    <td key={colIndex}>
-                                      {typeof row[col.name] === "number"
-                                        ? row[col.name].toFixed(3)
-                                        : row[col.name]}
-                                    </td>
-                                  ))}
-                                <td>...</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
