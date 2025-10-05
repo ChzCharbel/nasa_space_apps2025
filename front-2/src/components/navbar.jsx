@@ -61,7 +61,7 @@ function navbar() {
           <Link to="/explore">Explore</Link>
           <Link to="/dashboard">Dashboard</Link>
           <Link className="primary-link" to="/app">
-            Launch App
+            Start Hunting
           </Link>
         </div>
       </div>

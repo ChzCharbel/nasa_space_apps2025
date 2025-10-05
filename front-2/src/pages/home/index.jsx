@@ -332,7 +332,7 @@ const App = () => {
                   <div className="btn-glow"></div>
                 </Link>
                 <Link
-                  to="/dashboard"
+                  to="/walkthrough/get-started"
                   className="btn btn-secondary hero-btn-secondary"
                 >
                   <span className="btn-text">Start Hunting</span>
