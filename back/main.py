@@ -47,15 +47,26 @@ def select_dataset(datasetId: str):
     result = select_clean_dataset(datasetId)
     return result
 
+class DatasetAnalysisRequest(BaseModel):
+    observations: List[Dict]
+    hyperparameters: Dict = None
+
 @app.post("/analyze-dataset")
-async def handle_dataset_analysis(observations: List[Dict]):
+async def handle_dataset_analysis(request: DatasetAnalysisRequest):
     """
     Receives an array of observation objects from frontend
     Each observation contains all the astronomical parameters
+    Also accepts optional hyperparameters for model configuration
     Returns the dataset with added 'classification' field for each row
     Plus model performance metrics and summary statistics
     """
     try:
+        # Note: hyperparameters are accepted but not currently used
+        # The pre-trained .pkl models don't support dynamic parameter changes
+        # This is prepared for future model versions that support retraining
+        observations = request.observations
+        hyperparameters = request.hyperparameters
+        
         result = await analyze_full_dataset(observations)
         
         # Calculate classification counts
@@ -86,13 +97,23 @@ async def handle_dataset_analysis(observations: List[Dict]):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+class ObservationAnalysisRequest(BaseModel):
+    observation: Dict
+    hyperparameters: Dict = None
+
 @app.post("/analyze-observation")
-async def handle_observation_analysis(observation: Dict):
+async def handle_observation_analysis(request: ObservationAnalysisRequest):
     """
     Receives a single observation object from frontend
+    Also accepts optional hyperparameters for model configuration
     Returns detailed classification with explanation
     """
     try:
+        # Note: hyperparameters are accepted but not currently used
+        # The pre-trained .pkl models don't support dynamic parameter changes
+        observation = request.observation
+        hyperparameters = request.hyperparameters
+        
         result = await analyze_observation(observation)
         return {
             "status": "success",

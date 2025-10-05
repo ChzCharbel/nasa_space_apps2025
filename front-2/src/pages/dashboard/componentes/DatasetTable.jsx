@@ -22,6 +22,7 @@ function DatasetTable() {
   const isAnalyzing = useSelector((state) => state.dashboardStore.isAnalyzing);
   const datasetTableError = useSelector((state) => state.dashboardStore.datasetTableError);
   const selectedObservationIndex = useSelector((state) => state.dashboardStore.selectedObservationIndex);
+  const hyperparameters = useSelector((state) => state.dashboardStore.hyperparameters);
 
   const ROWS_PER_PAGE = 10; // Show more rows
   const totalPages = Math.ceil(dataset.length / ROWS_PER_PAGE);
@@ -51,7 +52,10 @@ function DatasetTable() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(observation),
+        body: JSON.stringify({
+          observation: observation,
+          hyperparameters: hyperparameters,
+        }),
       });
 
       if (response.ok) {
@@ -79,7 +83,10 @@ function DatasetTable() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataset),
+        body: JSON.stringify({
+          observations: dataset,
+          hyperparameters: hyperparameters,
+        }),
       });
 
       if (response.ok) {

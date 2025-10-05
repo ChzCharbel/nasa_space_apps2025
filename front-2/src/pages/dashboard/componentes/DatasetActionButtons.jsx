@@ -13,11 +13,13 @@ import {
   setCsvUploadError,
   clearErrors,
 } from "../store";
+import HyperparametersModal from "./HyperparametersModal";
 
 const DatasetActionButtons = () => {
   const dispatch = useDispatch();
 
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showHyperparametersModal, setShowHyperparametersModal] = useState(false);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
   
@@ -25,6 +27,7 @@ const DatasetActionButtons = () => {
   const selectedDataset = useSelector((state) => state.dashboardStore.selectedDataset);
   const isLoadingDatasets = useSelector((state) => state.dashboardStore.isLoadingDatasets);
   const isUploading = useSelector((state) => state.dashboardStore.isUploading);
+  const hyperparameters = useSelector((state) => state.dashboardStore.hyperparameters);
 
   const handleSelectDataset = async (datasetId) => {
     dispatch(setIsLoadingDatasets(true));
@@ -57,7 +60,10 @@ const DatasetActionButtons = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(loadedData),
+            body: JSON.stringify({
+              observations: loadedData,
+              hyperparameters: hyperparameters,
+            }),
           });
 
           if (analyzeResponse.ok) {
@@ -178,8 +184,9 @@ const DatasetActionButtons = () => {
 
   return (
     <div className="dataset-action-buttons">
-      {/* Choose Dataset Button with Dropdown */}
-      <div className="dropdown-container" ref={dropdownRef}>
+      <div className="top-row">
+        {/* Choose Dataset Button with Dropdown */}
+        <div className="dropdown-container" ref={dropdownRef}>
         <button
           className="btn btn-secondary dataset-btn"
           onMouseEnter={handleMouseEnter}
@@ -270,10 +277,10 @@ const DatasetActionButtons = () => {
             ))}
           </div>
         )}
-      </div>
+        </div>
 
-      {/* Import CSV Button */}
-      <label className="btn btn-secondary csv-upload-btn">
+        {/* Import CSV Button */}
+        <label className="btn btn-secondary csv-upload-btn">
         {isUploading ? (
           <>
             <svg
@@ -316,10 +323,47 @@ const DatasetActionButtons = () => {
           style={{ display: "none" }}
           disabled={isUploading}
         />
-      </label>
+        </label>
+      </div>
+
+      {/* Advanced Options Button - Bottom Row */}
+      <button
+        className="btn btn-secondary settings-btn"
+        onClick={() => setShowHyperparametersModal(true)}
+        title="Model Hyperparameters"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          style={{ marginRight: "0.5rem" }}
+        >
+          <path d="M12 20v-6M6 20V10m12 10V4" />
+          <circle cx="6" cy="8" r="2" />
+          <circle cx="12" cy="12" r="2" />
+          <circle cx="18" cy="2" r="2" />
+        </svg>
+        Model Hyperparameters
+      </button>
+
+      {/* Hyperparameters Modal */}
+      <HyperparametersModal
+        isOpen={showHyperparametersModal}
+        onClose={() => setShowHyperparametersModal(false)}
+      />
 
       <style jsx>{`
         .dataset-action-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          width: 100%;
+        }
+
+        .top-row {
           display: flex;
           gap: 0.75rem;
           align-items: center;
@@ -330,7 +374,8 @@ const DatasetActionButtons = () => {
         }
 
         .dataset-btn,
-        .csv-upload-btn {
+        .csv-upload-btn,
+        .settings-btn {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -348,8 +393,13 @@ const DatasetActionButtons = () => {
           height: 44px;
         }
 
+        .settings-btn {
+          width: 100%;
+        }
+
         .dataset-btn:hover,
-        .csv-upload-btn:hover {
+        .csv-upload-btn:hover,
+        .settings-btn:hover {
           background: rgba(59, 130, 246, 0.2);
           border-color: var(--accent-blue);
           /* Removed transform for better performance */
@@ -357,7 +407,8 @@ const DatasetActionButtons = () => {
         }
 
         .dataset-btn:disabled,
-        .csv-upload-btn:disabled {
+        .csv-upload-btn:disabled,
+        .settings-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
@@ -433,9 +484,8 @@ const DatasetActionButtons = () => {
         }
 
         @media (max-width: 768px) {
-          .dataset-action-buttons {
+          .top-row {
             flex-direction: column;
-            gap: 0.5rem;
             width: 100%;
           }
 
