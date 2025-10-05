@@ -6,34 +6,37 @@ import DatasetTable from "./componentes/DatasetTable";
 import Results from "./componentes/Results";
 import { mockData } from "./mockData";
 import "./styles.css";
+import { useSelector } from 'react-redux'
 
 const Dashboard = () => {
-  const [formData, setFormData] = useState({
-    transitMidpoint: "",
-    equilibriumTemp: "",
-    stellarIrradiance: "",
-    starBrightness: "",
-    planetRadius: "",
-    orbitalPeriod: "",
-    transitDepth: "",
-    radiusErrorPlus: "",
-    starRadius: "",
-    distanceErrorMinus: "",
-    starDistance: "",
-    properMotionRA: "",
-    periodErrorMinus: "",
-    midpointErrorMinus: "",
-    depthErrorPlus: "",
-    depthErrorMinus: "",
-    periodErrorPlus: "",
-    surfaceGravity: "",
-    tempErrorMinus: "",
-    starTemp: "",
-    distanceErrorPlus: "",
-    transitDuration: "",
-    durationErrorPlus: "",
-    midpointErrorPlus: "",
-  });
+  const formData = useSelector((state) => dashboardStore.state.formdata)
+
+  // const [formData, setFormData] = useState({
+  //   transitMidpoint: "",
+  //   equilibriumTemp: "",
+  //   stellarIrradiance: "",
+  //   starBrightness: "",
+  //   planetRadius: "",
+  //   orbitalPeriod: "",
+  //   transitDepth: "",
+  //   radiusErrorPlus: "",
+  //   starRadius: "",
+  //   distanceErrorMinus: "",
+  //   starDistance: "",
+  //   properMotionRA: "",
+  //   periodErrorMinus: "",
+  //   midpointErrorMinus: "",
+  //   depthErrorPlus: "",
+  //   depthErrorMinus: "",
+  //   periodErrorPlus: "",
+  //   surfaceGravity: "",
+  //   tempErrorMinus: "",
+  //   starTemp: "",
+  //   distanceErrorPlus: "",
+  //   transitDuration: "",
+  //   durationErrorPlus: "",
+  //   midpointErrorPlus: "",
+  // });
   const [availableDatasets, setAvailableDatasets] = useState(null);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false);
   const [selectedDataset, setSelectedDataset] = useState(null);
@@ -187,7 +190,7 @@ const Dashboard = () => {
   return (
     <main>
       <NavBar />
-      <div className="container">
+      <div className="container" style={{ padding: '2rem 0' }}>
         {/* Input Form with Action Buttons */}
         <div className="input-section">
           <AstronomicalDataInput
