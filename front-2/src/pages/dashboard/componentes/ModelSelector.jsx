@@ -59,18 +59,21 @@ const ModelSelector = () => {
           display: flex;
           align-items: center;
           gap: 1rem;
-          padding: 1rem;
-          background: rgba(26, 31, 58, 0.3);
+          padding: 1.2rem 1.5rem;
+          background: rgba(26, 31, 58, 0.5);
           border: 1px solid var(--glass-border);
-          border-radius: var(--radius-card);
-          margin-bottom: 1.5rem;
+          border-radius: var(--radius-button);
+          margin: 0;
+          flex: 1;
+          min-height: 60px;
         }
 
         .model-label {
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 600;
           color: var(--text-primary);
           white-space: nowrap;
+          margin: 0;
         }
 
         .toggle-container {
@@ -84,16 +87,17 @@ const ModelSelector = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 0.75rem 1.5rem;
+          padding: 0.6rem 1rem;
           border-radius: var(--radius-button);
           border: 1px solid var(--glass-border);
           background: rgba(26, 31, 58, 0.5);
           color: var(--text-secondary);
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
+          height: 40px;
         }
 
         .model-option:hover {
@@ -103,7 +107,11 @@ const ModelSelector = () => {
         }
 
         .model-option.active {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
+          background: linear-gradient(
+            135deg,
+            rgba(16, 185, 129, 0.2),
+            rgba(59, 130, 246, 0.2)
+          );
           border-color: var(--accent-green);
           color: var(--text-primary);
           box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);

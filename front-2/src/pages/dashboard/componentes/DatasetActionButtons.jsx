@@ -21,15 +21,24 @@ const DatasetActionButtons = () => {
   const dispatch = useDispatch();
 
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showHyperparametersModal, setShowHyperparametersModal] = useState(false);
+  const [showHyperparametersModal, setShowHyperparametersModal] =
+    useState(false);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
-  
-  const datasets = useSelector((state) => state.dashboardStore.availableDatasets);
-  const selectedDataset = useSelector((state) => state.dashboardStore.selectedDataset);
-  const isLoadingDatasets = useSelector((state) => state.dashboardStore.isLoadingDatasets);
+
+  const datasets = useSelector(
+    (state) => state.dashboardStore.availableDatasets
+  );
+  const selectedDataset = useSelector(
+    (state) => state.dashboardStore.selectedDataset
+  );
+  const isLoadingDatasets = useSelector(
+    (state) => state.dashboardStore.isLoadingDatasets
+  );
   const isUploading = useSelector((state) => state.dashboardStore.isUploading);
-  const hyperparameters = useSelector((state) => state.dashboardStore.hyperparameters);
+  const hyperparameters = useSelector(
+    (state) => state.dashboardStore.hyperparameters
+  );
   const activeModel = useSelector((state) => state.dashboardStore.activeModel);
 
   const handleSelectDataset = async (datasetId) => {
@@ -61,29 +70,34 @@ const DatasetActionButtons = () => {
         // Load all rows (clean datasets already have classification)
         const loadedData = result.data;
         dispatch(setDataset(loadedData));
-        
+
         // Auto-analyze the loaded dataset
         dispatch(setIsAnalyzing(true));
         try {
-          const analyzeResponse = await fetch("http://localhost:8000/analyze-dataset", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              observations: loadedData,
-              hyperparameters: hyperparameters,
-              model: activeModel,
-            }),
-          });
+          const analyzeResponse = await fetch(
+            "http://localhost:8000/analyze-dataset",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                observations: loadedData,
+                hyperparameters: hyperparameters,
+                model: activeModel,
+              }),
+            }
+          );
 
           if (analyzeResponse.ok) {
             const analyzeResult = await analyzeResponse.json();
             dispatch(setAnalyzedDataset(analyzeResult.analyzed_data));
-            dispatch(setAnalysisResult({
-              summary: analyzeResult.summary,
-              model_metrics: analyzeResult.model_metrics,
-            }));
+            dispatch(
+              setAnalysisResult({
+                summary: analyzeResult.summary,
+                model_metrics: analyzeResult.model_metrics,
+              })
+            );
             dispatch(setAnalysisType("batch"));
           }
         } catch (analyzeErr) {
@@ -92,7 +106,9 @@ const DatasetActionButtons = () => {
           dispatch(setIsAnalyzing(false));
         }
       } else {
-        dispatch(setDatasetTableError("Failed to load dataset. Please try again."));
+        dispatch(
+          setDatasetTableError("Failed to load dataset. Please try again.")
+        );
       }
     } catch (err) {
       dispatch(setDatasetTableError(`Error loading dataset: ${err.message}`));
@@ -105,13 +121,13 @@ const DatasetActionButtons = () => {
     if (file && file.type === "text/csv") {
       dispatch(setIsUploading(true));
       dispatch(clearErrors());
-      
+
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
           const csv = e.target.result;
           const lines = csv.split("\n").filter((line) => line.trim() !== "");
-          
+
           if (lines.length < 2) {
             dispatch(setCsvUploadError("CSV file is empty or invalid."));
             dispatch(setIsUploading(false));
@@ -119,20 +135,22 @@ const DatasetActionButtons = () => {
           }
 
           const headers = lines[0].split(",").map((h) => h.trim());
-          
+
           // Parse CSV rows
           const parsedData = [];
-          for (let i = 1; i < Math.min(lines.length, 11); i++) { // Take max 10 rows
+          for (let i = 1; i < Math.min(lines.length, 11); i++) {
+            // Take max 10 rows
             const values = lines[i].split(",").map((v) => v.trim());
             const row = {};
-            
+
             headers.forEach((header, index) => {
               const key = header.toLowerCase().replace(/\s+/g, "_");
               const value = values[index];
               // Try to parse as number, otherwise keep as string
-              row[key] = !isNaN(value) && value !== "" ? parseFloat(value) : value;
+              row[key] =
+                !isNaN(value) && value !== "" ? parseFloat(value) : value;
             });
-            
+
             parsedData.push(row);
           }
 
@@ -198,14 +216,104 @@ const DatasetActionButtons = () => {
       <div className="top-row">
         {/* Choose Dataset Button with Dropdown */}
         <div className="dropdown-container" ref={dropdownRef}>
-        <button
-          className="btn btn-secondary dataset-btn"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onClick={handleButtonClick}
-          disabled={isLoadingDatasets}
-        >
-          {isLoadingDatasets ? (
+          <button
+            className="btn btn-secondary dataset-btn"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleButtonClick}
+            disabled={isLoadingDatasets}
+          >
+            {isLoadingDatasets ? (
+              <>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{
+                    marginRight: "0.5rem",
+                    animation: "spin 1s linear infinite",
+                  }}
+                >
+                  <path d="M21 12a9 9 0 11-6.219-8.56" />
+                </svg>
+                Loading...
+              </>
+            ) : (
+              <>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{ marginRight: "0.5rem" }}
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+                Choose Dataset
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{
+                    marginLeft: "0.5rem",
+                    transform: showDropdown ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                  }}
+                >
+                  <polyline points="6,9 12,15 18,9" />
+                </svg>
+              </>
+            )}
+          </button>
+
+          {showDropdown && (
+            <div
+              className="dataset-dropdown"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              {datasets.map((dataset) => (
+                <div
+                  key={dataset.id}
+                  className={`dataset-option ${
+                    selectedDataset === dataset.id ? "selected" : ""
+                  }`}
+                  onClick={() => handleSelectDataset(dataset.id)}
+                >
+                  <div className="dataset-info">
+                    <h4>{dataset.name}</h4>
+                    <p>{dataset.description}</p>
+                  </div>
+                  {selectedDataset === dataset.id && (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M9 11l3 3L22 4" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Import CSV Button */}
+        <label className="btn btn-secondary csv-upload-btn">
+          {isUploading ? (
             <>
               <svg
                 width="16"
@@ -214,11 +322,14 @@ const DatasetActionButtons = () => {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                style={{ marginRight: "0.5rem", animation: "spin 1s linear infinite" }}
+                style={{
+                  marginRight: "0.5rem",
+                  animation: "spin 1s linear infinite",
+                }}
               >
                 <path d="M21 12a9 9 0 11-6.219-8.56" />
               </svg>
-              Loading...
+              Uploading...
             </>
           ) : (
             <>
@@ -231,109 +342,22 @@ const DatasetActionButtons = () => {
                 strokeWidth="2"
                 style={{ marginRight: "0.5rem" }}
               >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14,2 14,8 20,8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10,9 9,9 8,9" />
               </svg>
-              Choose Dataset
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                style={{
-                  marginLeft: "0.5rem",
-                  transform: showDropdown ? "rotate(180deg)" : "rotate(0deg)",
-                  transition: "transform 0.3s ease",
-                }}
-              >
-                <polyline points="6,9 12,15 18,9" />
-              </svg>
+              Import CSV
             </>
           )}
-        </button>
-
-        {showDropdown && (
-          <div
-            className="dataset-dropdown"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            {datasets.map((dataset) => (
-              <div
-                key={dataset.id}
-                className={`dataset-option ${
-                  selectedDataset === dataset.id ? "selected" : ""
-                }`}
-                onClick={() => handleSelectDataset(dataset.id)}
-              >
-                <div className="dataset-info">
-                  <h4>{dataset.name}</h4>
-                  <p>{dataset.description}</p>
-                </div>
-                {selectedDataset === dataset.id && (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M9 11l3 3L22 4" />
-                  </svg>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-        </div>
-
-        {/* Import CSV Button */}
-        <label className="btn btn-secondary csv-upload-btn">
-        {isUploading ? (
-          <>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{ marginRight: "0.5rem", animation: "spin 1s linear infinite" }}
-            >
-              <path d="M21 12a9 9 0 11-6.219-8.56" />
-            </svg>
-            Uploading...
-          </>
-        ) : (
-          <>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{ marginRight: "0.5rem" }}
-            >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14,2 14,8 20,8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <polyline points="10,9 9,9 8,9" />
-            </svg>
-            Import CSV
-          </>
-        )}
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          style={{ display: "none" }}
-          disabled={isUploading}
-        />
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+            disabled={isUploading}
+          />
         </label>
       </div>
 
@@ -375,16 +399,20 @@ const DatasetActionButtons = () => {
           flex-direction: column;
           gap: 0.75rem;
           width: 100%;
+          height: 100%;
+          justify-content: space-between;
         }
 
         .top-row {
           display: flex;
           gap: 0.75rem;
-          align-items: center;
+          align-items: stretch;
+          flex: 1;
         }
 
         .dropdown-container {
           position: relative;
+          flex: 1;
         }
 
         .dataset-btn,
@@ -393,7 +421,7 @@ const DatasetActionButtons = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 0.9rem 1.5rem;
+          padding: 1.2rem 1.5rem;
           border-radius: var(--radius-button);
           border: 1px solid var(--glass-border);
           background: rgba(26, 31, 58, 0.5);
@@ -404,7 +432,9 @@ const DatasetActionButtons = () => {
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           white-space: nowrap;
-          height: 44px;
+          height: auto;
+          min-height: 60px;
+          flex: 1;
         }
 
         .settings-btn {
@@ -498,15 +528,23 @@ const DatasetActionButtons = () => {
         }
 
         @media (max-width: 768px) {
+          .dataset-action-buttons {
+            height: auto;
+            justify-content: flex-start;
+          }
+
           .top-row {
             flex-direction: column;
             width: 100%;
+            flex: none;
           }
 
           .dataset-btn,
           .csv-upload-btn {
             width: 100%;
             justify-content: center;
+            flex: none;
+            min-height: 50px;
           }
 
           .dataset-dropdown {
