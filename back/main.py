@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from services.datasets import get_dataset_objects
 from services.analisis import analyze_observation, analyze_full_dataset
 
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -37,11 +39,12 @@ def predict(data: ExoplanetInput):
 def fetch_datasets():
     return get_dataset_objects()
 
-@app.post("/analyze-observation")
+@app.post("/analyze-dataset")
 async def handle_observation():
     observation = "" # read body of request, should contain parameters in json obj
 
     result = analyze_observation(observation)
+
 
     return ""
 
