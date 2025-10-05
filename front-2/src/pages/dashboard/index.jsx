@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import NavBar from "../../components/Navbar";
 import AstronomicalDataInput from "./componentes/AstronomicalDataInput";
 import DatasetActionButtons from "./componentes/DatasetActionButtons";
 import DatasetTable from "./componentes/DatasetTable";
 import Results from "./componentes/Results";
-// import { mockData } from "./mockData";
+import PlanetaryBackground from "./componentes/PlanetaryBackground";
 import "./styles.css";
-// import { useSelector } from 'react-redux'
 
 const Dashboard = () => {
-
   return (
-    <main>
+    <main style={{ position: 'relative', overflow: 'hidden' }}>
+      <PlanetaryBackground />
       <NavBar />
       <div className="container" style={{ padding: '2rem 0' }}>
         {/* Input Form with Action Buttons */}

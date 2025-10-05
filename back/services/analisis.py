@@ -1,4 +1,4 @@
-import pickle
+import joblib
 import numpy as np
 import pandas as pd
 from typing import Dict, List
@@ -13,30 +13,39 @@ def load_model(model_name="tess"):
     
     if model_name not in _models:
         try:
-            model_path = f"models/modelo_{model_name}_exoplanetas.pkl"
-            with open(model_path, 'rb') as f:
-                _models[model_name] = pickle.load(f)
-            print(f"Model loaded successfully from {model_path}")
+            model_path = os.path.join(os.getcwd(), "models", f"modelo_{model_name}_exoplanetas.pkl")
+            _models[model_name] = joblib.load(model_path)
+            print(f"✅ Model loaded successfully from {model_path}")
+            print(f"Model type: {type(_models[model_name])}")
         except Exception as e:
-            print(f"Error loading model {model_name}: {e}")
+            print(f"❌ Error loading model {model_name}: {e}")
             _models[model_name] = None
     
     return _models[model_name]
 
-def preprocess_observation(observation: Dict) -> np.ndarray:
+def preprocess_observation(observation: Dict, model_name: str = "tess") -> np.ndarray:
     """
     Preprocess a single observation for model prediction
-    Convert dict to numpy array in the correct feature order
+    Convert dict to numpy array in the correct feature order based on model
     """
-    # Define expected features (adjust based on your model's training features)
-    expected_features = [
-        'pl_radeerr1', 'st_rad', 'pl_orbper', 'st_dist', 'st_disterr2',
-        'pl_trandep', 'pl_rade', 'st_pmra', 'pl_orbpererr2', 'pl_tranmiderr',
-        'pl_tranmid', 'pl_eqt', 'st_tmag', 'starTemp', 'pl_trandeperr1',
-        'pl_trandeperr2', 'pl_orbpererr1', 'st_logg', 'pl_insol',
-        'st_tefferr2', 'st_teff', 'st_disterr1', 'pl_trandurh',
-        'pl_trandurherr1', 'pl_tranmiderr1'
-    ]
+    # Define expected features for each model (from clean datasets)
+    if model_name == "kepler":
+        expected_features = [
+            'rowid', 'koi_fpflag_nt', 'koi_score', 'koi_period', 'koi_dikco_msky',
+            'koi_fpflag_co', 'koi_fpflag_ss', 'koi_num_transits', 'koi_count',
+            'koi_steff_err1', 'koi_fpflag_ec', 'koi_srho_err2', 'kepid',
+            'koi_fwm_sdeco', 'koi_depth', 'koi_dikco_mra_err', 'koi_fwm_stat_sig',
+            'koi_prad_err1', 'koi_dicco_msky', 'koi_smet_err2', 'koi_ror',
+            'koi_dikco_msky_err', 'koi_prad', 'koi_dor'
+        ]
+    else:  # tess
+        expected_features = [
+            'pl_radeerr1', 'st_rad', 'pl_orbper', 'st_dist', 'st_disterr2',
+            'pl_trandep', 'pl_rade', 'st_pmra', 'pl_orbpererr2', 'pl_tranmiderr2',
+            'pl_tranmid', 'pl_eqt', 'st_tmag', 'pl_trandeperr1', 'pl_trandeperr2',
+            'pl_orbpererr1', 'st_logg', 'pl_insol', 'st_tefferr2', 'st_teff',
+            'st_disterr1', 'pl_trandurh', 'pl_trandurherr1', 'pl_tranmiderr1'
+        ]
     
     # Extract values in the correct order, use 0 for missing values
     values = []
@@ -147,7 +156,7 @@ async def analyze_observation(observation: Dict, model_name: str = "tess") -> Di
     
     try:
         # Preprocess the observation
-        X = preprocess_observation(observation)
+        X = preprocess_observation(observation, model_name)
         
         # Make prediction
         prediction = model.predict(X)[0]
@@ -226,7 +235,7 @@ async def analyze_full_dataset(observations: List[Dict], model_name: str = "tess
     
     try:
         # Preprocess all observations
-        X_list = [preprocess_observation(obs) for obs in observations]
+        X_list = [preprocess_observation(obs, model_name) for obs in observations]
         X = np.vstack(X_list)
         
         # Make predictions

@@ -1,0 +1,253 @@
+.planetary-background {
+  position: fixed;
+  top: -50px;
+  left: -50px;
+  width: 400px;
+  height: 400px;
+  z-index: 0;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.saturn-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.saturn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+}
+
+.saturn-body {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle at 30% 30%, #f4d47c, #e8b84d, #d4a144);
+  border-radius: 50%;
+  box-shadow: 
+    inset -20px -20px 40px rgba(0, 0, 0, 0.3),
+    0 0 60px rgba(244, 212, 124, 0.4);
+  animation: rotate 20s linear infinite;
+}
+
+.saturn-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateX(75deg);
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  border: 25px solid transparent;
+  border-top-color: rgba(200, 170, 120, 0.6);
+  border-bottom-color: rgba(200, 170, 120, 0.3);
+  box-shadow: 
+    0 0 20px rgba(200, 170, 120, 0.4),
+    inset 0 0 20px rgba(200, 170, 120, 0.2);
+  animation: ringRotate 30s linear infinite;
+}
+
+.saturn-rings::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 15px solid transparent;
+  border-top-color: rgba(180, 150, 100, 0.4);
+  border-bottom-color: rgba(180, 150, 100, 0.2);
+}
+
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes ringRotate {
+  from {
+    transform: translate(-50%, -50%) rotateX(75deg) rotateZ(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotateX(75deg) rotateZ(360deg);
+  }
+}
+
+/* Moon orbits */
+.moon-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px dashed rgba(100, 150, 200, 0.2);
+}
+
+.moon-orbit-1 {
+  width: 280px;
+  height: 280px;
+  animation: orbit1 12s linear infinite;
+}
+
+.moon-orbit-2 {
+  width: 360px;
+  height: 360px;
+  animation: orbit2 18s linear infinite reverse;
+}
+
+@keyframes orbit1 {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes orbit2 {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Moons */
+.moon {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 
+    inset -3px -3px 8px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(200, 220, 255, 0.6);
+}
+
+.moon-1 {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle at 30% 30%, #e8e8f0, #b8b8d0, #9090b0);
+}
+
+.moon-2 {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle at 30% 30%, #f0f0f8, #c8c8e0, #a0a0c0);
+}
+
+/* Twinkling stars */
+.planetary-background::before,
+.planetary-background::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 
+    50px 30px 0 white,
+    100px 80px 0 white,
+    150px 50px 0 rgba(255, 255, 255, 0.8),
+    200px 120px 0 rgba(255, 255, 255, 0.6),
+    80px 150px 0 white,
+    250px 180px 0 rgba(255, 255, 255, 0.7),
+    300px 90px 0 rgba(255, 255, 255, 0.5);
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.planetary-background::after {
+  animation-delay: 1.5s;
+  box-shadow: 
+    70px 60px 0 rgba(255, 255, 255, 0.6),
+    120px 110px 0 white,
+    170px 80px 0 rgba(255, 255, 255, 0.7),
+    220px 150px 0 white,
+    110px 180px 0 rgba(255, 255, 255, 0.8),
+    270px 210px 0 rgba(255, 255, 255, 0.6),
+    320px 120px 0 rgba(255, 255, 255, 0.5);
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .planetary-background {
+    width: 300px;
+    height: 300px;
+    top: -30px;
+    left: -30px;
+  }
+
+  .saturn {
+    width: 120px;
+    height: 120px;
+  }
+
+  .saturn-body {
+    width: 120px;
+    height: 120px;
+  }
+
+  .saturn-rings {
+    width: 220px;
+    height: 220px;
+    border-width: 18px;
+  }
+
+  .moon-orbit-1 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .moon-orbit-2 {
+    width: 260px;
+    height: 260px;
+  }
+
+  .moon-1 {
+    width: 15px;
+    height: 15px;
+  }
+
+  .moon-2 {
+    width: 12px;
+    height: 12px;
+  }
+}

@@ -10,7 +10,6 @@ import json
 from services.datasets import get_dataset_objects, select_clean_dataset
 from services.analisis import analyze_observation, analyze_full_dataset
 
-
 app = FastAPI()
 
 app.add_middleware(
