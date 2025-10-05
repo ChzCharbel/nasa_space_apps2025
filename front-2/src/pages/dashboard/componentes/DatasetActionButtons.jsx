@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 
-const DatasetActionButtons = ({
-  onDatasetSelect,
-  onCSVUpload,
-  isLoadingDatasets = false,
-}) => {
+const DatasetActionButtons = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [datasetSelected, setDatasetSelected] = useState(null);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
+  const isLoadingDatasets = useSelector((state) => state.dashboardStore.isLoadingDatasets)
 
   const datasets = [
     {
@@ -27,6 +25,89 @@ const DatasetActionButtons = ({
       description: "TESS mission exoplanet data",
     },
   ];
+
+  const handleSelectDataset = async (datasetId) => {
+    setIsAnalyzing(true);
+    setError("");
+    setSelectedDataset(datasetId);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/select-dataset/${datasetId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+        setDatasetPreview(result);
+        setShowPreview(true);
+      } else {
+        setError("Failed to load dataset preview.");
+      }
+    } catch (err) {
+      setError("Error selecting the dataset");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleCSVUpload = async (file) => {
+    if (file && file.type === "text/csv") {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const csv = e.target.result;
+          const lines = csv.split("\n").filter((line) => line.trim() !== "");
+          const headers = lines[0].split(",").map((h) => h.trim());
+
+          // Parse CSV and populate form (assuming first data row)
+          if (lines.length > 1) {
+            const data = lines[1].split(",").map((d) => d.trim());
+            const newFormData = {};
+
+            headers.forEach((header, index) => {
+              const key = header.toLowerCase().replace(/\s+/g, "");
+              if (data[index] && data[index] !== "") {
+                newFormData[key] = data[index];
+              }
+            });
+
+            setFormData((prev) => ({ ...prev, ...newFormData }));
+
+            // Upload to backend for analysis
+            setIsAnalyzing(true);
+            const response = await fetch("http://localhost:8000/upload-csv", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(newFormData),
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              setAnalysisResult(result);
+            } else {
+              setError("Analysis failed. Please try again.");
+            }
+            setIsAnalyzing(false);
+          }
+        } catch (err) {
+          setError(`Error parsing CSV file: ${err.message}`);
+          setIsAnalyzing(false);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      setError("Please select a valid CSV file.");
+    }
+  };
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -62,11 +143,11 @@ const DatasetActionButtons = ({
     setShowDropdown(!showDropdown);
   };
 
-  const handleDatasetClick = (dataset) => {
-    onDatasetSelect(dataset.id);
-    setDatasetSelected(dataset.id);
-    // Don't close dropdown automatically - let user click outside to close
-  };
+  // const handleDatasetClick = (dataset) => {
+  //   onDatasetSelect(dataset.id);
+  //   setDatasetSelected(dataset.id);
+  //   // Don't close dropdown automatically - let user click outside to close
+  // };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -152,7 +233,7 @@ const DatasetActionButtons = ({
                 className={`dataset-option ${
                   datasetSelected === dataset.id ? "selected" : ""
                 }`}
-                onClick={() => handleDatasetClick(dataset)}
+                onClick={() => handleSelectDataset(dataset.id)}
               >
                 <div className="dataset-info">
                   <h4>{dataset.name}</h4>

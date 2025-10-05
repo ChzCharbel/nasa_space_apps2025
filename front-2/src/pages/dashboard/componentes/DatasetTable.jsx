@@ -1,6 +1,9 @@
 import React from "react";
 
-function DatasetTable({ showPreview, datasetPreview }) {
+function DatasetTable() {
+  const showPreview = false
+  const datasetPreview = null
+
   return (
     <div className="glass-card">
       <h2
