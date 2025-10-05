@@ -9,15 +9,30 @@ import "./styles.css";
 
 const Dashboard = () => {
   const [formData, setFormData] = useState({
-    mass: "",
-    radius: "",
-    temperature: "",
+    transitMidpoint: "",
+    equilibriumTemp: "",
+    stellarIrradiance: "",
+    starBrightness: "",
+    planetRadius: "",
     orbitalPeriod: "",
-    semiMajorAxis: "",
-    eccentricity: "",
-    stellarMass: "",
-    stellarRadius: "",
-    stellarTemperature: "",
+    transitDepth: "",
+    radiusErrorPlus: "",
+    starRadius: "",
+    distanceErrorMinus: "",
+    starDistance: "",
+    properMotionRA: "",
+    periodErrorMinus: "",
+    midpointErrorMinus: "",
+    depthErrorPlus: "",
+    depthErrorMinus: "",
+    periodErrorPlus: "",
+    surfaceGravity: "",
+    tempErrorMinus: "",
+    starTemp: "",
+    distanceErrorPlus: "",
+    transitDuration: "",
+    durationErrorPlus: "",
+    midpointErrorPlus: "",
   });
   const [availableDatasets, setAvailableDatasets] = useState(null);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false);

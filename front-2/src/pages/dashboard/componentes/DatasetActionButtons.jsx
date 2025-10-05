@@ -58,10 +58,14 @@ const DatasetActionButtons = ({
     }, 150); // Small delay before hiding
   };
 
+  const handleButtonClick = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   const handleDatasetClick = (dataset) => {
     onDatasetSelect(dataset.id);
     setDatasetSelected(dataset.id);
-    setShowDropdown(false);
+    // Don't close dropdown automatically - let user click outside to close
   };
 
   const handleFileUpload = (event) => {
@@ -81,6 +85,7 @@ const DatasetActionButtons = ({
           className="btn btn-secondary dataset-btn"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onClick={handleButtonClick}
           disabled={isLoadingDatasets}
         >
           {isLoadingDatasets ? (
@@ -123,7 +128,11 @@ const DatasetActionButtons = ({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                style={{ marginLeft: "0.5rem" }}
+                style={{
+                  marginLeft: "0.5rem",
+                  transform: showDropdown ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.3s ease",
+                }}
               >
                 <polyline points="6,9 12,15 18,9" />
               </svg>
@@ -209,7 +218,7 @@ const DatasetActionButtons = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 0.75rem 1rem;
+          padding: 0.9rem 1.5rem;
           border-radius: var(--radius-button);
           border: 1px solid var(--glass-border);
           background: rgba(26, 31, 58, 0.5);
@@ -220,6 +229,7 @@ const DatasetActionButtons = ({
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           white-space: nowrap;
+          height: 44px;
         }
 
         .dataset-btn:hover,
