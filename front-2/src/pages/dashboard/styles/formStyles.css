@@ -122,14 +122,13 @@
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, #059669, var(--accent-green));
-  transform: translateY(-1px);
+  /* Removed transform for better performance */
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* Spinner animation */

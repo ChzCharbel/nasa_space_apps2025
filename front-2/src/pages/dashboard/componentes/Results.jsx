@@ -302,7 +302,7 @@ function Results() {
   };
 
   return (
-    <div className="glass-card">
+    <div className="glass-card" style={{ flexBasis: '30%' }}>
       <h2
         style={{
           marginBottom: "1.5rem",

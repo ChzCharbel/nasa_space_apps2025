@@ -18,8 +18,8 @@ const AstronomicalDataInput = () => {
   const formDataError = useSelector((state) => state.dashboardStore.formDataError);
 
   // Split fields into top 10 and the rest
-  const topFields = formFields.slice(0, 10);
-  const secondaryFields = formFields.slice(10);
+  const topFields = formFields.slice(0, 8);
+  const secondaryFields = formFields.slice(8);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,29 +83,6 @@ const AstronomicalDataInput = () => {
 
   return (
     <div className="glass-card">
-      <div style={{ marginBottom: "1rem", maxWidth: '65%' }}>
-        <h2
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            margin: 0,
-          }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-          </svg>
-          Astronomical Data Input
-        </h2>
-      </div>
 
       {/* Success notification */}
       {showSuccess && (
@@ -170,6 +147,31 @@ const AstronomicalDataInput = () => {
 
       {/* Action Buttons */}
       <div className="form-actions">
+        <div style={{ maxWidth: '65%', margin: 'auto auto auto 0', paddingTop: "1rem" }}>
+          <h2
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              margin: 'auto 0',
+              fontSize: '1rem',
+            }}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            Astronomical Data Input
+          </h2>
+        </div>
+
         <button
           type="button"
           className="btn btn-secondary"

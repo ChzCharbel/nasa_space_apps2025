@@ -427,7 +427,7 @@ section.hero {
 .btn:hover,
 .btn:focus,
 .btn-active {
-  transform: translateY(-4px) scale(1.05);
+  /* transform: translateY(-4px) scale(1.05); */
   box-shadow: 0 0 32px rgba(16, 185, 129, 0.5);
 }
 
@@ -771,7 +771,7 @@ section.hero {
 }
 
 .container {
-  max-width: 1200px;
+  width: 85%;
   margin: 0 auto;
   position: relative;
 }
@@ -799,10 +799,10 @@ section.hero {
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
-.glass-card:hover {
+/* .glass-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 24px 40px rgba(10, 13, 35, 0.55);
-}
+} */
 
 .cards-grid {
   display: grid;
@@ -1569,13 +1569,12 @@ section.hero {
 
 /* Enhanced card animations */
 .glass-card {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); */
 }
 
-.glass-card:hover {
-  transform: translateY(-8px) scale(1.02);
+/* .glass-card:hover {
   box-shadow: 0 32px 60px rgba(10, 13, 35, 0.65);
-}
+} */
 
 .feature-card:hover .card-icon {
   transform: scale(1.1) rotate(5deg);

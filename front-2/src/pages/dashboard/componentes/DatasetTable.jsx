@@ -23,7 +23,7 @@ function DatasetTable() {
   const datasetTableError = useSelector((state) => state.dashboardStore.datasetTableError);
   const selectedObservationIndex = useSelector((state) => state.dashboardStore.selectedObservationIndex);
 
-  const ROWS_PER_PAGE = 50; // Show more rows
+  const ROWS_PER_PAGE = 10; // Show more rows
   const totalPages = Math.ceil(dataset.length / ROWS_PER_PAGE);
   const startIndex = currentPage * ROWS_PER_PAGE;
   const endIndex = startIndex + ROWS_PER_PAGE;
@@ -150,7 +150,7 @@ function DatasetTable() {
   };
 
   return (
-    <div className="glass-card" style={{ maxWidth: '100%' }}>
+    <div className="glass-card" style={{ flexBasis: '70%', maxWidth: '70%', minWidth: 0, overflow: 'hidden' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2
           style={{
@@ -199,7 +199,9 @@ function DatasetTable() {
           color: 'var(--accent-red, #ef4444)',
           display: 'flex',
           alignItems: 'center',
-          gap: '0.5rem'
+          gap: '0.5rem',
+          maxWidth: '100%',
+          overflowX: 'scroll',
         }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />

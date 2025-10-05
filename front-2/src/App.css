@@ -101,7 +101,7 @@ nav.navbar {
 
 .primary-link:hover,
 .primary-link:focus {
-  transform: translateY(-2px);
+  /* Removed transform for better performance */
   box-shadow: 0 0 32px rgba(16, 185, 129, 0.55);
 }
 
@@ -179,7 +179,7 @@ section.hero {
 .btn:hover,
 .btn:focus,
 .btn-active {
-  transform: translateY(-3px);
+  /* Removed transform for better performance */
   box-shadow: 0 0 28px rgba(16, 185, 129, 0.4);
 }
 
@@ -232,7 +232,7 @@ section.hero {
 }
 
 .container {
-  max-width: 1200px;
+  width: 90%;
   margin: 0 auto;
   position: relative;
 }

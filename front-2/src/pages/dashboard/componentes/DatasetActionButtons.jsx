@@ -352,7 +352,7 @@ const DatasetActionButtons = () => {
         .csv-upload-btn:hover {
           background: rgba(59, 130, 246, 0.2);
           border-color: var(--accent-blue);
-          transform: translateY(-1px);
+          /* Removed transform for better performance */
           box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
         }
 
@@ -360,7 +360,6 @@ const DatasetActionButtons = () => {
         .csv-upload-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
-          transform: none;
         }
 
         .dataset-dropdown {
@@ -382,11 +381,9 @@ const DatasetActionButtons = () => {
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(-5px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
           }
         }
 

@@ -23,14 +23,8 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-grid">
-          <DatasetTable
-            // showPreview={showPreview}
-            // datasetPreview={datasetPreview}
-          />
-          <Results
-          //  error={error} 
-          //  analysisResult={analysisResult}
-          />
+          <DatasetTable />
+          <Results />
         </div>
       </div>
     </main>

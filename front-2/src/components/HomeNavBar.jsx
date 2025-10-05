@@ -11,10 +11,10 @@ function navbar() {
                       </Link>
                     </div>
                     <div className="nav-links">
-                        <Link to="/" >Home</Link>
-                        <Link to="/explore" >Explore</Link>
-                        <Link to="/dashboard">Dashboard</Link>
-                        <Link className="primary-link" to="/app">Launch App</Link>
+                        <a href="#features" onClick={(event) => handleSmoothScroll(event, '#features')}>Features</a>
+                        <a href="#demo" onClick={(event) => handleSmoothScroll(event, '#demo')}>Demo</a>
+                        <a href="#team" onClick={(event) => handleSmoothScroll(event, '#team')}>Team</a>
+                        <a className="primary-link" href="/app">Launch App</a>
                     </div>
                 </div>
             </nav>
