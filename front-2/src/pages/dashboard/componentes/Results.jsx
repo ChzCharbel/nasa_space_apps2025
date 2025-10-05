@@ -2,10 +2,18 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 function Results() {
-  const analysisResult = useSelector((state) => state.dashboardStore.analysisResult);
-  const analyzedDataset = useSelector((state) => state.dashboardStore.analyzedDataset);
-  const analysisType = useSelector((state) => state.dashboardStore.analysisType);
-  const resultsError = useSelector((state) => state.dashboardStore.resultsError);
+  const analysisResult = useSelector(
+    (state) => state.dashboardStore.analysisResult
+  );
+  const analyzedDataset = useSelector(
+    (state) => state.dashboardStore.analyzedDataset
+  );
+  const analysisType = useSelector(
+    (state) => state.dashboardStore.analysisType
+  );
+  const resultsError = useSelector(
+    (state) => state.dashboardStore.resultsError
+  );
   const isAnalyzing = useSelector((state) => state.dashboardStore.isAnalyzing);
 
   const getClassificationLabel = (classification) => {
@@ -33,7 +41,8 @@ function Results() {
 
     const classification = analysisResult.classification;
     const confidence = analysisResult.confidence || 0;
-    const explanation = analysisResult.explanation || "No explanation available.";
+    const explanation =
+      analysisResult.explanation || "No explanation available.";
     const featureImportance = analysisResult.feature_importance || [];
     const probabilities = analysisResult.probabilities || [];
 
@@ -50,7 +59,15 @@ function Results() {
             marginBottom: "1.5rem",
           }}
         >
-          <div className="result-header" style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+          <div
+            className="result-header"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
             <div className="result-icon">
               <svg
                 width="48"
@@ -65,7 +82,12 @@ function Results() {
               </svg>
             </div>
             <div>
-              <h3 style={{ margin: "0 0 0.25rem 0", color: getClassificationColor(classification) }}>
+              <h3
+                style={{
+                  margin: "0 0 0.25rem 0",
+                  color: getClassificationColor(classification),
+                }}
+              >
                 {getClassificationLabel(classification)}
               </h3>
               <p style={{ margin: 0, color: "var(--text-secondary)" }}>
@@ -77,30 +99,69 @@ function Results() {
           {/* Explanation */}
           <div style={{ marginBottom: "1rem" }}>
             <h4 style={{ margin: "0 0 0.5rem 0" }}>Why this classification?</h4>
-            <p style={{ color: "var(--text-secondary)", lineHeight: "1.6" }}>{explanation}</p>
+            <p style={{ color: "var(--text-secondary)", lineHeight: "1.6" }}>
+              {explanation}
+            </p>
           </div>
 
           {/* Feature Importance */}
           {featureImportance.length > 0 && (
             <div style={{ marginBottom: "1rem" }}>
-              <h4 style={{ margin: "0 0 0.5rem 0" }}>Key Influencing Features</h4>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <h4 style={{ margin: "0 0 0.5rem 0" }}>
+                Key Influencing Features
+              </h4>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
                 {featureImportance.slice(0, 7).map((feature, index) => (
-                  <div key={index} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ minWidth: "150px", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        minWidth: "150px",
+                        color: "var(--text-secondary)",
+                        fontSize: "0.9rem",
+                      }}
+                    >
                       {feature.name}
                     </span>
-                    <div style={{ flex: 1, height: "8px", backgroundColor: "rgba(255,255,255,0.1)", borderRadius: "4px", overflow: "hidden" }}>
+                    <div
+                      style={{
+                        flex: 1,
+                        height: "8px",
+                        backgroundColor: "rgba(255,255,255,0.1)",
+                        borderRadius: "4px",
+                        overflow: "hidden",
+                      }}
+                    >
                       <div
                         style={{
                           width: `${feature.importance * 100}%`,
                           height: "100%",
-                          backgroundColor: getClassificationColor(classification),
+                          backgroundColor:
+                            getClassificationColor(classification),
                           transition: "width 0.3s ease",
                         }}
                       />
                     </div>
-                    <span style={{ minWidth: "50px", textAlign: "right", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <span
+                      style={{
+                        minWidth: "50px",
+                        textAlign: "right",
+                        fontSize: "0.85rem",
+                        color: "var(--text-secondary)",
+                      }}
+                    >
                       {(feature.importance * 100).toFixed(1)}%
                     </span>
                   </div>
@@ -112,8 +173,16 @@ function Results() {
           {/* Probabilities for all classes */}
           {probabilities.length > 0 && (
             <div>
-              <h4 style={{ margin: "0 0 0.5rem 0" }}>Classification Probabilities</h4>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.75rem" }}>
+              <h4 style={{ margin: "0 0 0.5rem 0" }}>
+                Classification Probabilities
+              </h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+                  gap: "0.75rem",
+                }}
+              >
                 {probabilities.map((prob, index) => (
                   <div
                     key={index}
@@ -124,10 +193,22 @@ function Results() {
                       textAlign: "center",
                     }}
                   >
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--text-secondary)",
+                        marginBottom: "0.25rem",
+                      }}
+                    >
                       {getClassificationLabel(index)}
                     </div>
-                    <div style={{ fontSize: "1.25rem", fontWeight: "600", color: getClassificationColor(index) }}>
+                    <div
+                      style={{
+                        fontSize: "1.25rem",
+                        fontWeight: "600",
+                        color: getClassificationColor(index),
+                      }}
+                    >
                       {(prob * 100).toFixed(1)}%
                     </div>
                   </div>
@@ -161,7 +242,13 @@ function Results() {
         {/* Summary Statistics */}
         <div style={{ marginBottom: "1.5rem" }}>
           <h3 style={{ margin: "0 0 1rem 0" }}>Classification Summary</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+              gap: "1rem",
+            }}
+          >
             <div
               style={{
                 padding: "1rem",
@@ -171,11 +258,31 @@ function Results() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: getClassificationColor(3) }}>{planets}</div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: "bold",
+                  color: getClassificationColor(3),
+                }}
+              >
+                {planets}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
                 Confirmed Planets
               </div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
                 {total > 0 ? ((planets / total) * 100).toFixed(1) : 0}%
               </div>
             </div>
@@ -189,9 +296,31 @@ function Results() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: getClassificationColor(2) }}>{candidates}</div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Candidates</div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: "bold",
+                  color: getClassificationColor(2),
+                }}
+              >
+                {candidates}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
+                Candidates
+              </div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
                 {total > 0 ? ((candidates / total) * 100).toFixed(1) : 0}%
               </div>
             </div>
@@ -205,9 +334,31 @@ function Results() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: getClassificationColor(1) }}>{ambiguous}</div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Ambiguous</div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: "bold",
+                  color: getClassificationColor(1),
+                }}
+              >
+                {ambiguous}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
+                Ambiguous
+              </div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
                 {total > 0 ? ((ambiguous / total) * 100).toFixed(1) : 0}%
               </div>
             </div>
@@ -221,9 +372,31 @@ function Results() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: getClassificationColor(0) }}>{nonPlanets}</div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Non-Planets</div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: "bold",
+                  color: getClassificationColor(0),
+                }}
+              >
+                {nonPlanets}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
+                Non-Planets
+              </div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text-secondary)",
+                  marginTop: "0.25rem",
+                }}
+              >
                 {total > 0 ? ((nonPlanets / total) * 100).toFixed(1) : 0}%
               </div>
             </div>
@@ -240,35 +413,81 @@ function Results() {
           }}
         >
           <h3 style={{ margin: "0 0 1rem 0" }}>Model Performance</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "1rem",
+            }}
+          >
             <div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginBottom: "0.25rem",
+                }}
+              >
                 Average Confidence
               </div>
-              <div style={{ fontSize: "1.5rem", fontWeight: "600" }}>{(avgConfidence * 100).toFixed(1)}%</div>
+              <div style={{ fontSize: "1.5rem", fontWeight: "600" }}>
+                {(avgConfidence * 100).toFixed(1)}%
+              </div>
             </div>
             <div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginBottom: "0.25rem",
+                }}
+              >
                 High Confidence (≥90%)
               </div>
-              <div style={{ fontSize: "1.5rem", fontWeight: "600", color: getClassificationColor(3) }}>
+              <div
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "600",
+                  color: getClassificationColor(3),
+                }}
+              >
                 {highConfidenceCount}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  marginBottom: "0.25rem",
+                }}
+              >
                 Low Confidence (&lt;70%)
               </div>
-              <div style={{ fontSize: "1.5rem", fontWeight: "600", color: getClassificationColor(1) }}>
+              <div
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "600",
+                  color: getClassificationColor(1),
+                }}
+              >
                 {lowConfidenceCount}
               </div>
             </div>
             {modelMetrics.model_version && (
               <div>
-                <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    marginBottom: "0.25rem",
+                  }}
+                >
                   Model Version
                 </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "600" }}>{modelMetrics.model_version}</div>
+                <div style={{ fontSize: "1.5rem", fontWeight: "600" }}>
+                  {modelMetrics.model_version}
+                </div>
               </div>
             )}
           </div>
@@ -283,8 +502,22 @@ function Results() {
             borderRadius: "8px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -292,9 +525,14 @@ function Results() {
             <strong>Summary</strong>
           </div>
           <p style={{ margin: 0, color: "var(--text-secondary)" }}>
-            Out of {total} observations analyzed, {planets + candidates} ({total > 0 ? (((planets + candidates) / total) * 100).toFixed(1) : 0}%) 
-            are likely planets or candidates. The model showed an average confidence of {(avgConfidence * 100).toFixed(1)}%.
-            {lowConfidenceCount > 0 && ` ${lowConfidenceCount} observation(s) had low confidence and may require further review.`}
+            Out of {total} observations analyzed, {planets + candidates} (
+            {total > 0
+              ? (((planets + candidates) / total) * 100).toFixed(1)
+              : 0}
+            %) are likely planets or candidates. The model showed an average
+            confidence of {(avgConfidence * 100).toFixed(1)}%.
+            {lowConfidenceCount > 0 &&
+              ` ${lowConfidenceCount} observation(s) had low confidence and may require further review.`}
           </p>
         </div>
       </div>
@@ -302,7 +540,15 @@ function Results() {
   };
 
   return (
-    <div className="glass-card" style={{ flexBasis: '30%' }}>
+    <div
+      className="glass-card"
+      style={{
+        flexBasis: "30%",
+        minHeight: "400px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <h2
         style={{
           marginBottom: "1.5rem",
@@ -340,7 +586,14 @@ function Results() {
             gap: "0.5rem",
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="12" cy="12" r="10" />
             <line x1="15" y1="9" x2="9" y2="15" />
             <line x1="9" y1="9" x2="15" y2="15" />
@@ -363,17 +616,36 @@ function Results() {
           >
             <path d="M21 12a9 9 0 11-6.219-8.56" />
           </svg>
-          <p style={{ marginTop: "1rem", color: "var(--text-secondary)" }}>Analyzing data...</p>
+          <p style={{ marginTop: "1rem", color: "var(--text-secondary)" }}>
+            Analyzing data...
+          </p>
         </div>
       )}
 
       {/* Results Display */}
-      {!isAnalyzing && analysisResult && analysisType === "single" && renderSingleObservationAnalysis()}
-      {!isAnalyzing && analysisResult && analysisType === "batch" && renderBatchAnalysis()}
+      {!isAnalyzing &&
+        analysisResult &&
+        analysisType === "single" &&
+        renderSingleObservationAnalysis()}
+      {!isAnalyzing &&
+        analysisResult &&
+        analysisType === "batch" &&
+        renderBatchAnalysis()}
 
       {/* Empty State */}
       {!isAnalyzing && !analysisResult && !resultsError && (
-        <div className="no-results" style={{ textAlign: "center", padding: "3rem 1rem" }}>
+        <div
+          className="no-results"
+          style={{
+            textAlign: "center",
+            padding: "3rem 1rem",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <svg
             width="48"
             height="48"
@@ -388,7 +660,8 @@ function Results() {
           </svg>
           <h3 style={{ margin: "1rem 0 0.5rem 0" }}>No Analysis Results Yet</h3>
           <p style={{ color: "var(--text-secondary)", margin: 0 }}>
-            Add observations and click "Analyze Dataset" or click on a row to analyze a single observation.
+            Add observations and click "Analyze Dataset" or click on a row to
+            analyze a single observation.
           </p>
         </div>
       )}
