@@ -73,20 +73,28 @@ async def handle_dataset_analysis(request: DatasetAnalysisRequest):
         # Calculate classification counts
         classifications = [r.get('classification') for r in result]
         
+        # Debug: Check what classifications look like
+        print("Sample classifications:", classifications[:5] if len(classifications) > 0 else [])
+        print("Classification types:", [type(c) for c in classifications[:5]] if len(classifications) > 0 else [])
+        
         # Calculate model metrics
         confidences = [r.get('confidence', 0) for r in result]
         avg_confidence = sum(confidences) / len(confidences) if confidences else 0
         
+        # Binary classification: 0 = non-candidate, 1 = candidate
+        # Handle both string and int classifications from CSV
+        summary = {
+            "total": len(result),
+            "candidates": sum(1 for c in classifications if str(c) == '1' or c == 1),
+            "non_planets": sum(1 for c in classifications if str(c) == '0' or c == 0),
+            "is_binary": True
+        }
+        print("SUMMARY: ", summary)
+        
         return {
             "status": "success",
             "analyzed_data": result,
-            "summary": {
-                "total": len(result),
-                "planets": sum(1 for c in classifications if c == 3),
-                "candidates": sum(1 for c in classifications if c == 2),
-                "ambiguous": sum(1 for c in classifications if c == 1),
-                "non_planets": sum(1 for c in classifications if c == 0)
-            },
+            "summary": summary,
             "model_metrics": {
                 "average_confidence": avg_confidence,
                 "low_confidence_count": sum(1 for c in confidences if c < 0.7),

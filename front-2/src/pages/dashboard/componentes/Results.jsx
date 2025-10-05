@@ -228,10 +228,16 @@ function Results() {
     const modelMetrics = analysisResult.model_metrics || {};
 
     const total = summary.total || 0;
-    const planets = summary.planets || 0;
+    const isBinary = summary.is_binary || false;
+    
+    // For binary classification
     const candidates = summary.candidates || 0;
-    const ambiguous = summary.ambiguous || 0;
     const nonPlanets = summary.non_planets || 0;
+    
+    // For multi-class classification
+    const planets = summary.planets || 0;
+    const multiCandidates = summary.candidates || 0;
+    const ambiguous = summary.ambiguous || 0;
 
     const avgConfidence = modelMetrics.average_confidence || 0;
     const lowConfidenceCount = modelMetrics.low_confidence_count || 0;
@@ -242,165 +248,254 @@ function Results() {
         {/* Summary Statistics */}
         <div style={{ marginBottom: "1.5rem" }}>
           <h3 style={{ margin: "0 0 1rem 0" }}>Classification Summary</h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: "1rem",
-            }}
-          >
+          
+          {isBinary ? (
+            // Binary Classification Display (Clean Datasets)
             <div
               style={{
-                padding: "1rem",
-                backgroundColor: `${getClassificationColor(3)}15`,
-                border: `2px solid ${getClassificationColor(3)}`,
-                borderRadius: "12px",
-                textAlign: "center",
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "1rem",
               }}
             >
               <div
                 style={{
-                  fontSize: "2rem",
-                  fontWeight: "bold",
-                  color: getClassificationColor(3),
+                  padding: "1.5rem",
+                  backgroundColor: `${getClassificationColor(3)}15`,
+                  border: `2px solid ${getClassificationColor(3)}`,
+                  borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
-                {planets}
+                <div
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "bold",
+                    color: getClassificationColor(3),
+                  }}
+                >
+                  {candidates}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.5rem",
+                  }}
+                >
+                  Possible Candidates
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {total > 0 ? ((candidates / total) * 100).toFixed(1) : 0}%
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: "0.85rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                Confirmed Planets
-              </div>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                {total > 0 ? ((planets / total) * 100).toFixed(1) : 0}%
-              </div>
-            </div>
 
+              <div
+                style={{
+                  padding: "1.5rem",
+                  backgroundColor: `${getClassificationColor(0)}15`,
+                  border: `2px solid ${getClassificationColor(0)}`,
+                  borderRadius: "12px",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "bold",
+                    color: getClassificationColor(0),
+                  }}
+                >
+                  {nonPlanets}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.5rem",
+                  }}
+                >
+                  Non-Candidates
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {total > 0 ? ((nonPlanets / total) * 100).toFixed(1) : 0}%
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Multi-Class Classification Display (Model Predictions)
             <div
               style={{
-                padding: "1rem",
-                backgroundColor: `${getClassificationColor(2)}15`,
-                border: `2px solid ${getClassificationColor(2)}`,
-                borderRadius: "12px",
-                textAlign: "center",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                gap: "1rem",
               }}
             >
               <div
                 style={{
-                  fontSize: "2rem",
-                  fontWeight: "bold",
-                  color: getClassificationColor(2),
+                  padding: "1rem",
+                  backgroundColor: `${getClassificationColor(3)}15`,
+                  border: `2px solid ${getClassificationColor(3)}`,
+                  borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
-                {candidates}
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: getClassificationColor(3),
+                  }}
+                >
+                  {planets}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  Confirmed Planets
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {total > 0 ? ((planets / total) * 100).toFixed(1) : 0}%
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: "0.85rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                Candidates
-              </div>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                {total > 0 ? ((candidates / total) * 100).toFixed(1) : 0}%
-              </div>
-            </div>
 
-            <div
-              style={{
-                padding: "1rem",
-                backgroundColor: `${getClassificationColor(1)}15`,
-                border: `2px solid ${getClassificationColor(1)}`,
-                borderRadius: "12px",
-                textAlign: "center",
-              }}
-            >
               <div
                 style={{
-                  fontSize: "2rem",
-                  fontWeight: "bold",
-                  color: getClassificationColor(1),
+                  padding: "1rem",
+                  backgroundColor: `${getClassificationColor(2)}15`,
+                  border: `2px solid ${getClassificationColor(2)}`,
+                  borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
-                {ambiguous}
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: getClassificationColor(2),
+                  }}
+                >
+                  {multiCandidates}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  Candidates
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {total > 0 ? ((multiCandidates / total) * 100).toFixed(1) : 0}%
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: "0.85rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                Ambiguous
-              </div>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                {total > 0 ? ((ambiguous / total) * 100).toFixed(1) : 0}%
-              </div>
-            </div>
 
-            <div
-              style={{
-                padding: "1rem",
-                backgroundColor: `${getClassificationColor(0)}15`,
-                border: `2px solid ${getClassificationColor(0)}`,
-                borderRadius: "12px",
-                textAlign: "center",
-              }}
-            >
               <div
                 style={{
-                  fontSize: "2rem",
-                  fontWeight: "bold",
-                  color: getClassificationColor(0),
+                  padding: "1rem",
+                  backgroundColor: `${getClassificationColor(1)}15`,
+                  border: `2px solid ${getClassificationColor(1)}`,
+                  borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
-                {nonPlanets}
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: getClassificationColor(1),
+                  }}
+                >
+                  {ambiguous}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  Ambiguous
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {total > 0 ? ((ambiguous / total) * 100).toFixed(1) : 0}%
+                </div>
               </div>
+
               <div
                 style={{
-                  fontSize: "0.85rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
+                  padding: "1rem",
+                  backgroundColor: `${getClassificationColor(0)}15`,
+                  border: `2px solid ${getClassificationColor(0)}`,
+                  borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
-                Non-Planets
-              </div>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
-                  marginTop: "0.25rem",
-                }}
-              >
-                {total > 0 ? ((nonPlanets / total) * 100).toFixed(1) : 0}%
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: getClassificationColor(0),
+                  }}
+                >
+                  {nonPlanets}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  Non-Planets
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-secondary)",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {total > 0 ? ((nonPlanets / total) * 100).toFixed(1) : 0}%
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Model Performance Metrics */}
@@ -525,14 +620,27 @@ function Results() {
             <strong>Summary</strong>
           </div>
           <p style={{ margin: 0, color: "var(--text-secondary)" }}>
-            Out of {total} observations analyzed, {planets + candidates} (
-            {total > 0
-              ? (((planets + candidates) / total) * 100).toFixed(1)
-              : 0}
-            %) are likely planets or candidates. The model showed an average
-            confidence of {(avgConfidence * 100).toFixed(1)}%.
-            {lowConfidenceCount > 0 &&
-              ` ${lowConfidenceCount} observation(s) had low confidence and may require further review.`}
+            {isBinary ? (
+              <>
+                Out of {total} observations analyzed, {candidates} (
+                {total > 0 ? ((candidates / total) * 100).toFixed(1) : 0}%) are
+                possible exoplanet candidates. The average confidence is{" "}
+                {(avgConfidence * 100).toFixed(1)}%.
+                {lowConfidenceCount > 0 &&
+                  ` ${lowConfidenceCount} observation(s) had low confidence and may require further review.`}
+              </>
+            ) : (
+              <>
+                Out of {total} observations analyzed, {planets + multiCandidates} (
+                {total > 0
+                  ? (((planets + multiCandidates) / total) * 100).toFixed(1)
+                  : 0}
+                %) are likely planets or candidates. The model showed an average
+                confidence of {(avgConfidence * 100).toFixed(1)}%.
+                {lowConfidenceCount > 0 &&
+                  ` ${lowConfidenceCount} observation(s) had low confidence and may require further review.`}
+              </>
+            )}
           </p>
         </div>
       </div>
@@ -608,14 +716,14 @@ function Results() {
           <svg
             width="48"
             height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
             style={{ animation: "spin 2s linear infinite", margin: "0 auto" }}
-          >
+                  >
             <path d="M21 12a9 9 0 11-6.219-8.56" />
-          </svg>
+                  </svg>
           <p style={{ marginTop: "1rem", color: "var(--text-secondary)" }}>
             Analyzing data...
           </p>

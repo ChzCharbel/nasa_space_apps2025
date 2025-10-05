@@ -136,9 +136,11 @@ async def analyze_observation(observation: Dict, model_name: str = "tess") -> Di
     Analyze a single observation and return detailed results with explanation
     """
     model = load_model(model_name)
+    print("MODEL: ", model)
     
     if model is None:
         # Return mock data if model not available
+        print("MODEL WAS NONE")
         return {
             "classification": 2,
             "confidence": 0.75,

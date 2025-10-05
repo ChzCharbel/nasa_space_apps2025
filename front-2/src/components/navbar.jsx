@@ -54,13 +54,14 @@ function navbar() {
                 strokeLinecap="round"
               />
             </svg>
+            {/* Diana÷\ */}
           </Link>
         </div>
         <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/explore">Explore</Link>
           <Link to="/dashboard">Dashboard</Link>
-          <Link className="primary-link" to="/app">
+          <Link className="primary-link" to="/walkthrough/get-started">
             Start Hunting
           </Link>
         </div>
