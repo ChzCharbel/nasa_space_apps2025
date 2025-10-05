@@ -4,24 +4,24 @@ import pandas as pd
 from typing import Dict, List
 import os
 
-# Load the model (using TESS model as default)
-MODEL_PATH = "models/modelo_tess_exoplanetas.pkl"
+# Global variables to cache models
+_models = {}
 
-# Global variable to cache the model
-_model = None
-
-def load_model():
-    """Load the ML model from pickle file"""
-    global _model
-    if _model is None:
+def load_model(model_name="tess"):
+    """Load the ML model from pickle file based on model name"""
+    global _models
+    
+    if model_name not in _models:
         try:
-            with open(MODEL_PATH, 'rb') as f:
-                _model = pickle.load(f)
-            print(f"Model loaded successfully from {MODEL_PATH}")
+            model_path = f"models/modelo_{model_name}_exoplanetas.pkl"
+            with open(model_path, 'rb') as f:
+                _models[model_name] = pickle.load(f)
+            print(f"Model loaded successfully from {model_path}")
         except Exception as e:
-            print(f"Error loading model: {e}")
-            _model = None
-    return _model
+            print(f"Error loading model {model_name}: {e}")
+            _models[model_name] = None
+    
+    return _models[model_name]
 
 def preprocess_observation(observation: Dict) -> np.ndarray:
     """
@@ -122,11 +122,11 @@ def generate_explanation(observation: Dict, classification: int, confidence: flo
     
     return explanation
 
-async def analyze_observation(observation: Dict) -> Dict:
+async def analyze_observation(observation: Dict, model_name: str = "tess") -> Dict:
     """
     Analyze a single observation and return detailed results with explanation
     """
-    model = load_model()
+    model = load_model(model_name)
     
     if model is None:
         # Return mock data if model not available
@@ -192,7 +192,7 @@ async def analyze_observation(observation: Dict) -> Dict:
             "details": {"error": str(e)}
         }
 
-async def analyze_full_dataset(observations: List[Dict]) -> List[Dict]:
+async def analyze_full_dataset(observations: List[Dict], model_name: str = "tess") -> List[Dict]:
     """
     Analyze multiple observations and return results with classifications
     If observations already have classification field, skip model prediction
@@ -208,7 +208,7 @@ async def analyze_full_dataset(observations: List[Dict]) -> List[Dict]:
             results.append(obs)
         return results
     
-    model = load_model()
+    model = load_model(model_name)
     
     if model is None:
         # Return mock data if model not available

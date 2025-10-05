@@ -57,7 +57,7 @@ nav.navbar {
 }
 
 .nav-container {
-  max-width: 1200px;
+  width: 90%;
   margin: 0 auto;
   padding: 1rem 1.5rem;
   display: flex;

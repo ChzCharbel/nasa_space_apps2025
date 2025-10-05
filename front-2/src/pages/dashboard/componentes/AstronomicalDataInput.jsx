@@ -13,9 +13,16 @@ const AstronomicalDataInput = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const formFields = useSelector((state) => state.dashboardStore.formFields);
-  const formValues = useSelector((state) => state.dashboardStore.formValues);
+  const activeModel = useSelector((state) => state.dashboardStore.activeModel);
+  const tessFormFields = useSelector((state) => state.dashboardStore.tessFormFields);
+  const keplerFormFields = useSelector((state) => state.dashboardStore.keplerFormFields);
+  const tessFormValues = useSelector((state) => state.dashboardStore.tessFormValues);
+  const keplerFormValues = useSelector((state) => state.dashboardStore.keplerFormValues);
   const formDataError = useSelector((state) => state.dashboardStore.formDataError);
+  
+  // Get current fields and values based on active model
+  const formFields = activeModel === "kepler" ? keplerFormFields : tessFormFields;
+  const formValues = activeModel === "kepler" ? keplerFormValues : tessFormValues;
 
   // Split fields into top 10 and the rest
   const topFields = formFields.slice(0, 8);
@@ -83,7 +90,6 @@ const AstronomicalDataInput = () => {
 
   return (
     <div className="glass-card">
-
       {/* Success notification */}
       {showSuccess && (
         <div style={{

@@ -3,8 +3,11 @@ import { configureStore, createSlice } from "@reduxjs/toolkit";
 const dashboardStoreSlice = createSlice({
   name: 'dashboardStore',
   initialState: {
-    // Field definitions (metadata)
-    formFields: [
+    // Active model selection
+    activeModel: "tess", // "tess" or "kepler"
+    
+    // Field definitions for TESS model
+    tessFormFields: [
         { key: "pl_radeerr1", label: "Transit Midpoint", step: "0.0001", required: true },
         { key: "st_rad", label: "Star Radius", step: "0.01", required: true },
         { key: "pl_orbper", label: "Orbital Period", step: "0.01", required: true },
@@ -32,8 +35,28 @@ const dashboardStoreSlice = createSlice({
         { key: "pl_tranmiderr1", label: "Transit Midpoint Error Upper", step: "0.1", required: false }
     ],
     
-    // Current form values (with default values)
-    formValues: {
+    // Field definitions for Kepler model
+    keplerFormFields: [
+        { key: "koi_fpflag_nt", label: "Not Transit-Like Flag", step: "1", required: true },
+        { key: "koi_score", label: "Disposition Score", step: "0.01", required: true },
+        { key: "koi_period", label: "Orbital Period", step: "0.01", required: true },
+        { key: "koi_dikco_msky", label: "Diff Image Sky Offset", step: "0.01", required: false },
+        { key: "koi_fpflag_co", label: "Centroid Offset Flag", step: "1", required: false },
+        { key: "koi_fpflag_ss", label: "Stellar Eclipse Flag", step: "1", required: false },
+        { key: "koi_num_transits", label: "Number of Transits", step: "1", required: true },
+        { key: "koi_count", label: "KOI Count", step: "1", required: false },
+        { key: "koi_steff_err1", label: "Stellar Temp Error Upper", step: "1", required: false },
+        { key: "koi_fpflag_ec", label: "Ephemeris Match Flag", step: "1", required: false },
+        { key: "koi_srho_err2", label: "Stellar Density Error Lower", step: "0.01", required: false },
+        { key: "kepid", label: "Kepler ID", step: "1", required: true },
+        { key: "koi_fwm_sdeco", label: "FW Stat Depth Offset", step: "0.01", required: false },
+        { key: "koi_depth", label: "Transit Depth", step: "0.01", required: true },
+        { key: "koi_dikco_mra_err", label: "RA Offset Error", step: "0.01", required: false },
+        { key: "koi_fwm_stat_sig", label: "FW Stat Significance", step: "0.01", required: false }
+    ],
+    
+    // Current form values for TESS (with default values)
+    tessFormValues: {
         pl_radeerr1: 0.0,
         st_rad: 1.0,
         pl_orbper: 10.0,
@@ -59,6 +82,26 @@ const dashboardStoreSlice = createSlice({
         pl_trandurh: 3.0,
         pl_trandurherr1: 0.0,
         pl_tranmiderr1: 0.0
+    },
+    
+    // Current form values for Kepler (with default values)
+    keplerFormValues: {
+        koi_fpflag_nt: 0,
+        koi_score: 0.5,
+        koi_period: 10.0,
+        koi_dikco_msky: 0.0,
+        koi_fpflag_co: 0,
+        koi_fpflag_ss: 0,
+        koi_num_transits: 10,
+        koi_count: 1,
+        koi_steff_err1: 0.0,
+        koi_fpflag_ec: 0,
+        koi_srho_err2: 0.0,
+        kepid: 10000000,
+        koi_fwm_sdeco: 0.0,
+        koi_depth: 100.0,
+        koi_dikco_mra_err: 0.0,
+        koi_fwm_stat_sig: 0.0
     },
     
     // Available datasets from backend
@@ -115,12 +158,26 @@ const dashboardStoreSlice = createSlice({
     },
   },
   reducers: {
+    // Model selection
+    setActiveModel: (state, action) => { 
+      state.activeModel = action.payload;
+    },
+    
     // Form management
-    setFormFields: (state, action) => { state.formFields = action.payload },
-    setFormValues: (state, action) => { state.formValues = action.payload },
+    setFormValues: (state, action) => { 
+      if (state.activeModel === "kepler") {
+        state.keplerFormValues = action.payload;
+      } else {
+        state.tessFormValues = action.payload;
+      }
+    },
     updateFormValue: (state, action) => {
       const { key, value } = action.payload;
-      state.formValues[key] = value;
+      if (state.activeModel === "kepler") {
+        state.keplerFormValues[key] = value;
+      } else {
+        state.tessFormValues[key] = value;
+      }
     },
     
     // Dataset management
@@ -193,7 +250,7 @@ const dashboardStoreSlice = createSlice({
 });
 
 export const {
-  setFormFields,
+  setActiveModel,
   setFormValues,
   updateFormValue,
   setAvailableDatasets,

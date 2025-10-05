@@ -12,8 +12,10 @@ import {
   setDatasetTableError,
   setCsvUploadError,
   clearErrors,
+  setActiveModel,
 } from "../store";
 import HyperparametersModal from "./HyperparametersModal";
+import ModelSelector from "./ModelSelector";
 
 const DatasetActionButtons = () => {
   const dispatch = useDispatch();
@@ -28,12 +30,20 @@ const DatasetActionButtons = () => {
   const isLoadingDatasets = useSelector((state) => state.dashboardStore.isLoadingDatasets);
   const isUploading = useSelector((state) => state.dashboardStore.isUploading);
   const hyperparameters = useSelector((state) => state.dashboardStore.hyperparameters);
+  const activeModel = useSelector((state) => state.dashboardStore.activeModel);
 
   const handleSelectDataset = async (datasetId) => {
     dispatch(setIsLoadingDatasets(true));
     dispatch(clearErrors());
     dispatch(setSelectedDataset(datasetId));
     setShowDropdown(false);
+
+    // Auto-switch model based on dataset
+    if (datasetId === "kepler" || datasetId === "k2") {
+      dispatch(setActiveModel("kepler"));
+    } else if (datasetId === "tess") {
+      dispatch(setActiveModel("tess"));
+    }
 
     try {
       const response = await fetch(
@@ -63,6 +73,7 @@ const DatasetActionButtons = () => {
             body: JSON.stringify({
               observations: loadedData,
               hyperparameters: hyperparameters,
+              model: activeModel,
             }),
           });
 
@@ -325,6 +336,9 @@ const DatasetActionButtons = () => {
         />
         </label>
       </div>
+
+      {/* Model Selector - Bottom Row */}
+      <ModelSelector />
 
       {/* Advanced Options Button - Bottom Row */}
       <button

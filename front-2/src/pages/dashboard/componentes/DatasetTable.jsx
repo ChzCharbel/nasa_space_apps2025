@@ -18,11 +18,16 @@ function DatasetTable() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   
   const dataset = useSelector((state) => state.dashboardStore.dataset);
-  const formFields = useSelector((state) => state.dashboardStore.formFields);
+  const activeModel = useSelector((state) => state.dashboardStore.activeModel);
+  const tessFormFields = useSelector((state) => state.dashboardStore.tessFormFields);
+  const keplerFormFields = useSelector((state) => state.dashboardStore.keplerFormFields);
   const isAnalyzing = useSelector((state) => state.dashboardStore.isAnalyzing);
   const datasetTableError = useSelector((state) => state.dashboardStore.datasetTableError);
   const selectedObservationIndex = useSelector((state) => state.dashboardStore.selectedObservationIndex);
   const hyperparameters = useSelector((state) => state.dashboardStore.hyperparameters);
+  
+  // Get current fields based on active model
+  const formFields = activeModel === "kepler" ? keplerFormFields : tessFormFields;
 
   const ROWS_PER_PAGE = 10; // Show more rows
   const totalPages = Math.ceil(dataset.length / ROWS_PER_PAGE);
@@ -55,6 +60,7 @@ function DatasetTable() {
         body: JSON.stringify({
           observation: observation,
           hyperparameters: hyperparameters,
+          model: activeModel,
         }),
       });
 
@@ -86,6 +92,7 @@ function DatasetTable() {
         body: JSON.stringify({
           observations: dataset,
           hyperparameters: hyperparameters,
+          model: activeModel,
         }),
       });
 

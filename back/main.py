@@ -50,6 +50,7 @@ def select_dataset(datasetId: str):
 class DatasetAnalysisRequest(BaseModel):
     observations: List[Dict]
     hyperparameters: Dict = None
+    model: str = "tess"  # "tess" or "kepler"
 
 @app.post("/analyze-dataset")
 async def handle_dataset_analysis(request: DatasetAnalysisRequest):
@@ -66,8 +67,9 @@ async def handle_dataset_analysis(request: DatasetAnalysisRequest):
         # This is prepared for future model versions that support retraining
         observations = request.observations
         hyperparameters = request.hyperparameters
+        model = request.model
         
-        result = await analyze_full_dataset(observations)
+        result = await analyze_full_dataset(observations, model)
         
         # Calculate classification counts
         classifications = [r.get('classification') for r in result]
@@ -100,6 +102,7 @@ async def handle_dataset_analysis(request: DatasetAnalysisRequest):
 class ObservationAnalysisRequest(BaseModel):
     observation: Dict
     hyperparameters: Dict = None
+    model: str = "tess"  # "tess" or "kepler"
 
 @app.post("/analyze-observation")
 async def handle_observation_analysis(request: ObservationAnalysisRequest):
@@ -113,8 +116,9 @@ async def handle_observation_analysis(request: ObservationAnalysisRequest):
         # The pre-trained .pkl models don't support dynamic parameter changes
         observation = request.observation
         hyperparameters = request.hyperparameters
+        model = request.model
         
-        result = await analyze_observation(observation)
+        result = await analyze_observation(observation, model)
         return {
             "status": "success",
             "classification": result["classification"],
