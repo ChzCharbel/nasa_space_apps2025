@@ -189,8 +189,8 @@ function DatasetTable() {
     <div
       className="glass-card"
       style={{
-        flexBasis: "70%",
-        maxWidth: "70%",
+        // flexBasis: "70%",
+        // maxWidth: "70%",
         minWidth: 0,
         overflow: "hidden",
         minHeight: "400px",

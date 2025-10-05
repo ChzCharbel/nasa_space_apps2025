@@ -14,7 +14,7 @@ function navbar() {
                         <Link to="/" >Home</Link>
                         <Link to="/explore" >Explore</Link>
                         <Link to="/dashboard">Dashboard</Link>
-                        <Link className="primary-link" to="/app">Launch App</Link>
+                        <Link className="primary-link" to="/app">Start Hunting</Link>
                     </div>
                 </div>
             </nav>

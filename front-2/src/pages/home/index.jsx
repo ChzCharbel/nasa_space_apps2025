@@ -356,10 +356,10 @@ const App = () => {
                   <div className="btn-glow"></div>
                 </Link>
                 <Link
-                  to="/dashboard"
+                  to="/walkthrough/get-started"
                   className="btn btn-secondary hero-btn-secondary"
                 >
-                  <span className="btn-text">View Demo</span>
+                  <span className="btn-text">Start Demo</span>
                   <div className="btn-particles"></div>
                 </Link>
               </div>
