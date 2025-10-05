@@ -2,6 +2,8 @@
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+import csv
+import json
 
 from services.datasets import get_dataset_objects
 from services.analisis import analyze_observation, analyze_full_dataset
@@ -37,6 +39,14 @@ def predict(data: ExoplanetInput):
 def fetch_datasets():
     return get_dataset_objects()
 
+@app.get("/select-dataset/{datasetId}")
+def select_dataset(datasetId: str):
+    csv_file = f"resources/clean/{datasetId}_clean.csv"
+    with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        return list(reader)
+    return ""
+
 @app.post("/analyze-observation")
 async def handle_observation():
     observation = "" # read body of request, should contain parameters in json obj
@@ -44,7 +54,6 @@ async def handle_observation():
     result = analyze_observation(observation)
 
     return ""
-
 
 @app.post("/upload-csv")
 async def handle_dataset_upload(file: UploadFile = File(...)):
