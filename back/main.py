@@ -8,6 +8,8 @@ import json
 from services.datasets import get_dataset_objects
 from services.analisis import analyze_observation, analyze_full_dataset
 
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -47,11 +49,12 @@ def select_dataset(datasetId: str):
         return list(reader)
     return ""
 
-@app.post("/analyze-observation")
+@app.post("/analyze-dataset")
 async def handle_observation():
     observation = "" # read body of request, should contain parameters in json obj
 
     result = analyze_observation(observation)
+
 
     return ""
 

@@ -1,14 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { processDescriptions, 
-    featureCards, 
-    challengeCards,
-    teamMembers,
-    metrics,
-    techPills
-} from './statics';
-import NavBar from '../../components/Navbar'
-
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  processDescriptions,
+  featureCards,
+  challengeCards,
+  teamMembers,
+  metrics,
+  techPills,
+} from "./statics";
+import NavBar from "../../components/Navbar";
+import "../../assets/home.css";
 
 const svgIcon = (path) => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -22,6 +23,7 @@ const App = () => {
   const animationRef = useRef();
   const countersRef = useRef([]);
   const [activeScenario, setActiveScenario] = useState("planet");
+  const [isLoading, setIsLoading] = useState(true);
 
   const scenarios = useMemo(
     () => ({
@@ -44,16 +46,28 @@ const App = () => {
   );
 
   useEffect(() => {
+    // Simulate loading time for smooth initial animation
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     const hero = heroRef.current;
     if (!canvas || !hero) {
       return;
     }
     const ctx = canvas.getContext("2d");
-    const STAR_COUNT = 200;
+    const STAR_COUNT = 300;
+    const PLANET_COUNT = 3;
     const stars = [];
+    const planets = [];
     let width = 0;
     let height = 0;
+    let time = 0;
 
     const resizeCanvas = () => {
       width = canvas.width = window.innerWidth;
@@ -66,39 +80,119 @@ const App = () => {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * 1.4 + 0.2,
+          radius: Math.random() * 2 + 0.5,
+          originalRadius: Math.random() * 2 + 0.5,
+          alpha: Math.random() * 0.8 + 0.2,
+          twinkle: Math.random() * 0.03 + 0.01,
+          drift: Math.random() * 0.08 + 0.02,
+          pulse: Math.random() * 0.02 + 0.01,
         });
-        stars[i].alpha = Math.random();
-        stars[i].twinkle = Math.random() * 0.02 + 0.01;
-        stars[i].drift = Math.random() * 0.05 + 0.02;
+      }
+    };
+
+    const initPlanets = () => {
+      planets.length = 0;
+      for (let i = 0; i < PLANET_COUNT; i += 1) {
+        planets.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 8 + 4,
+          angle: Math.random() * Math.PI * 2,
+          speed: Math.random() * 0.02 + 0.01,
+          alpha: Math.random() * 0.3 + 0.1,
+          color: i === 0 ? "#3b82f6" : i === 1 ? "#10b981" : "#8b5cf6",
+        });
       }
     };
 
     const drawStars = () => {
       ctx.clearRect(0, 0, width, height);
+
+      // Draw planets
+      for (const planet of planets) {
+        planet.angle += planet.speed;
+        planet.x += Math.cos(planet.angle) * 0.5;
+        planet.y += Math.sin(planet.angle) * 0.3;
+
+        if (planet.x < -planet.radius) planet.x = width + planet.radius;
+        if (planet.x > width + planet.radius) planet.x = -planet.radius;
+        if (planet.y < -planet.radius) planet.y = height + planet.radius;
+        if (planet.y > height + planet.radius) planet.y = -planet.radius;
+
+        const gradient = ctx.createRadialGradient(
+          planet.x,
+          planet.y,
+          0,
+          planet.x,
+          planet.y,
+          planet.radius
+        );
+        gradient.addColorStop(
+          0,
+          `${planet.color}${Math.floor(planet.alpha * 255)
+            .toString(16)
+            .padStart(2, "0")}`
+        );
+        gradient.addColorStop(1, `${planet.color}00`);
+
+        ctx.beginPath();
+        ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+
+      // Draw stars
       for (const star of stars) {
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+
+        // Create twinkling effect
+        const twinkleIntensity =
+          Math.sin(time * star.twinkle * 100) * 0.5 + 0.5;
+        star.radius =
+          star.originalRadius + Math.sin(time * star.pulse * 50) * 0.5;
+
+        const gradient = ctx.createRadialGradient(
+          star.x,
+          star.y,
+          0,
+          star.x,
+          star.y,
+          star.radius
+        );
+        gradient.addColorStop(
+          0,
+          `rgba(255, 255, 255, ${star.alpha * twinkleIntensity})`
+        );
+        gradient.addColorStop(
+          0.5,
+          `rgba(255, 255, 255, ${star.alpha * twinkleIntensity * 0.5})`
+        );
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+        ctx.fillStyle = gradient;
         ctx.fill();
-        star.alpha += star.twinkle * (Math.random() > 0.5 ? 1 : -1);
-        star.alpha = Math.min(1, Math.max(0.2, star.alpha));
+
         star.y += star.drift;
         if (star.y > height) {
           star.y = 0;
           star.x = Math.random() * width;
         }
       }
+
+      time += 0.016;
       animationRef.current = requestAnimationFrame(drawStars);
     };
 
     resizeCanvas();
     initStars();
+    initPlanets();
     drawStars();
 
     const handleResize = () => {
       resizeCanvas();
       initStars();
+      initPlanets();
     };
 
     window.addEventListener("resize", handleResize);
@@ -120,19 +214,38 @@ const App = () => {
 
     const revealObserver = new IntersectionObserver(
       (entries, observer) => {
-        entries.forEach((entry) => {
+        entries.forEach((entry, index) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
+            // Add staggered delay based on element position
+            setTimeout(() => {
+              entry.target.classList.add("visible");
+            }, index * 100);
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
 
     revealElements.forEach((el) => revealObserver.observe(el));
 
     return () => revealObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.pageYOffset;
+      const parallaxElements = document.querySelectorAll(".parallax");
+
+      parallaxElements.forEach((element) => {
+        const speed = element.dataset.speed || 0.5;
+        const yPos = -(scrolled * speed);
+        element.style.transform = `translateY(${yPos}px)`;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -208,29 +321,89 @@ const App = () => {
       <header>
         <section className="hero" id="top" ref={heroRef}>
           <canvas id="starfield" ref={canvasRef} aria-hidden="true" />
-          <div className="hero-content" data-section>
-            <h1>Exoplanet Detection AI</h1>
-            <p>Finding New Worlds with Machine Learning</p>
-            <div className="hero-actions">
-              <Link to="/explore" className="btn btn-primary">
-                Explore Datasets
-              </Link>
-
-              {/* <button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={(event) => handleSmoothScroll(event, '#demo')}
-                            >
-                                <Link to="/explore" className="btn btn-primary" />
-                                Explore Datasets
-                            </button> */}
-              <Link to="/dashboard" className="btn btn-secondary">
-                View Demo
-              </Link>
+          {isLoading && (
+            <div className="loading-overlay">
+              <div className="loading-spinner">
+                <div className="spinner-ring"></div>
+                <div className="spinner-ring"></div>
+                <div className="spinner-ring"></div>
+              </div>
+              <div className="loading-text">Initializing AI Systems...</div>
+            </div>
+          )}
+          <div className="hero-layout">
+            <div
+              className={`hero-content ${isLoading ? "loading" : ""}`}
+              data-section
+            >
+              <div className="hero-title-container">
+                <h1 className="hero-title">
+                  <span className="title-line">Exoplanet</span>
+                  <span className="title-line">Detection AI</span>
+                </h1>
+                <div className="title-accent"></div>
+              </div>
+              <p className="hero-subtitle">
+                <span className="subtitle-text">Finding New Worlds with</span>
+                <span className="subtitle-highlight">Machine Learning</span>
+              </p>
+              <div className="hero-actions">
+                <Link
+                  to="/explore"
+                  className="btn btn-primary hero-btn-primary"
+                >
+                  <span className="btn-text">Explore Datasets</span>
+                  <div className="btn-glow"></div>
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="btn btn-secondary hero-btn-secondary"
+                >
+                  <span className="btn-text">View Demo</span>
+                  <div className="btn-particles"></div>
+                </Link>
+              </div>
+            </div>
+            <div className="planetary-system">
+              <div className="orbit orbit-1">
+                <div className="planet planet-1"></div>
+              </div>
+              <div className="orbit orbit-2">
+                <div className="planet planet-2"></div>
+              </div>
+              <div className="orbit orbit-3">
+                <div className="planet planet-3"></div>
+              </div>
+              <div className="orbit orbit-4">
+                <div className="planet planet-4">
+                  <div className="planet-rings"></div>
+                </div>
+              </div>
+              <div className="orbit orbit-5">
+                <div className="planet planet-5"></div>
+              </div>
+              <div className="orbit orbit-6">
+                <div className="planet planet-6">
+                  <div className="planet-rings"></div>
+                </div>
+              </div>
+              <div className="orbit orbit-7">
+                <div className="planet planet-7"></div>
+              </div>
+              <div className="orbit orbit-8">
+                <div className="planet planet-8"></div>
+              </div>
+              <div className="central-star"></div>
+              <div className="space-dust"></div>
             </div>
           </div>
           <div className="scroll-indicator" aria-hidden="true">
-            <span />
+            <div className="scroll-text">Scroll to explore</div>
+            <div className="scroll-arrow">
+              <span />
+              <span />
+              <span />
+            </div>
           </div>
         </section>
       </header>
@@ -241,8 +414,12 @@ const App = () => {
           <div className="container reveal">
             <h2 className="section-title">The Challenge</h2>
             <div className="cards-grid three">
-              {challengeCards.map((card) => (
-                <div key={card.title} className="glass-card">
+              {challengeCards.map((card, index) => (
+                <div
+                  key={card.title}
+                  className="glass-card challenge-card"
+                  style={{ animationDelay: `${index * 0.2}s` }}
+                >
                   <div className="card-icon">{svgIcon(card.icon)}</div>
                   <div className="card-title">{card.title}</div>
                   <div className="card-text">{card.text}</div>
@@ -330,7 +507,92 @@ const App = () => {
             </p>
             <div className="demo-area">
               <div className="demo-visual glass-card" id="demo-visual">
-                <div id="demo-waveform">{activeScenarioData.waveform}</div>
+                <div className="demo-chart-container">
+                  <div className="chart-header">
+                    <h3>Light Curve Analysis</h3>
+                    <div className="chart-status">
+                      <div
+                        className={`status-indicator ${
+                          activeScenario === "planet"
+                            ? "planet-detected"
+                            : "false-positive"
+                        }`}
+                      ></div>
+                      <span>
+                        {activeScenario === "planet"
+                          ? "Exoplanet Detected"
+                          : "False Positive"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="chart-wrapper">
+                    <svg className="light-curve-chart" viewBox="0 0 400 200">
+                      <defs>
+                        <linearGradient
+                          id="chartGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="rgba(59, 130, 246, 0.8)"
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="rgba(16, 185, 129, 0.3)"
+                          />
+                        </linearGradient>
+                        <filter id="glow">
+                          <feGaussianBlur
+                            stdDeviation="3"
+                            result="coloredBlur"
+                          />
+                          <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <path
+                        className="light-curve-path"
+                        d={
+                          activeScenario === "planet"
+                            ? "M0,100 Q50,80 100,60 T200,40 T300,50 T400,70"
+                            : "M0,100 Q50,90 100,95 T200,85 T300,90 T400,88"
+                        }
+                        fill="none"
+                        stroke="url(#chartGradient)"
+                        strokeWidth="3"
+                        filter="url(#glow)"
+                      />
+                      <circle
+                        className="data-point"
+                        cx="200"
+                        cy={activeScenario === "planet" ? "40" : "85"}
+                        r="4"
+                        fill="#3b82f6"
+                      />
+                    </svg>
+                  </div>
+                  <div className="chart-legend">
+                    <div className="legend-item">
+                      <div className="legend-color planet"></div>
+                      <span>
+                        Transit Depth:{" "}
+                        {activeScenario === "planet" ? "2.1%" : "0.3%"}
+                      </span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color noise"></div>
+                      <span>
+                        Noise Level:{" "}
+                        {activeScenario === "planet" ? "Low" : "High"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="demo-controls glass-card">
                 <div className="card-title">Sample Scenarios</div>
@@ -341,34 +603,63 @@ const App = () => {
                 <div className="demo-controls">
                   <button
                     type="button"
-                    className={`btn btn-secondary ${
+                    className={`btn btn-secondary demo-btn ${
                       activeScenario === "planet" ? "btn-active" : ""
                     }`}
                     onClick={() => setActiveScenario("planet")}
                   >
-                    Known Planet
+                    <span className="btn-icon">🪐</span>
+                    <span>Known Planet</span>
                   </button>
                   <button
                     type="button"
-                    className={`btn btn-secondary ${
+                    className={`btn btn-secondary demo-btn ${
                       activeScenario === "falsePositive" ? "btn-active" : ""
                     }`}
                     onClick={() => setActiveScenario("falsePositive")}
                   >
-                    False Positive
+                    <span className="btn-icon">⚠️</span>
+                    <span>False Positive</span>
                   </button>
                 </div>
                 <div className="demo-output" id="demo-output">
-                  <div className="card-title">Prediction</div>
-                  <p className="card-text">
-                    <strong>Result:</strong> {activeScenarioData.result}
-                    <br />
-                    <strong>Confidence:</strong> {activeScenarioData.confidence}
-                    <br />
-                    <strong>Signal-to-Noise:</strong> {activeScenarioData.snr}
-                    <br />
-                    <strong>Follow-up:</strong> {activeScenarioData.followUp}
-                  </p>
+                  <div className="card-title">AI Prediction</div>
+                  <div className="prediction-metrics">
+                    <div className="metric-row">
+                      <span className="metric-label">Result:</span>
+                      <span
+                        className={`metric-value ${
+                          activeScenario === "planet" ? "success" : "warning"
+                        }`}
+                      >
+                        {activeScenarioData.result}
+                      </span>
+                    </div>
+                    <div className="metric-row">
+                      <span className="metric-label">Confidence:</span>
+                      <div className="confidence-bar">
+                        <div
+                          className="confidence-fill"
+                          style={{ width: activeScenarioData.confidence }}
+                        ></div>
+                        <span className="confidence-text">
+                          {activeScenarioData.confidence}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="metric-row">
+                      <span className="metric-label">Signal-to-Noise:</span>
+                      <span className="metric-value">
+                        {activeScenarioData.snr}
+                      </span>
+                    </div>
+                    <div className="metric-row">
+                      <span className="metric-label">Follow-up:</span>
+                      <span className="metric-text">
+                        {activeScenarioData.followUp}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
