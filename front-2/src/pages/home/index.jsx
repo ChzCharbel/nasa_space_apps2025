@@ -22,28 +22,7 @@ const App = () => {
   const canvasRef = useRef(null);
   const animationRef = useRef();
   const countersRef = useRef([]);
-  const [activeScenario, setActiveScenario] = useState("planet");
   const [isLoading, setIsLoading] = useState(true);
-
-  const scenarios = useMemo(
-    () => ({
-      planet: {
-        waveform: "Stable transit signature detected at 2.1% depth.",
-        result: "Likely Exoplanet",
-        confidence: "97.4%",
-        snr: "12.8",
-        followUp: "Prioritize spectroscopic observations.",
-      },
-      falsePositive: {
-        waveform: "Irregular fluctuation consistent with stellar variability.",
-        result: "False Positive",
-        confidence: "88.1%",
-        snr: "3.2",
-        followUp: "Flag for automated reprocessing only.",
-      },
-    }),
-    []
-  );
 
   useEffect(() => {
     // Simulate loading time for smooth initial animation
@@ -302,8 +281,6 @@ const App = () => {
     return () => counterObserver.disconnect();
   }, []);
 
-  const activeScenarioData = scenarios[activeScenario];
-
   const handleSmoothScroll = (event, selector) => {
     event.preventDefault();
     const target = document.querySelector(selector);
@@ -338,28 +315,27 @@ const App = () => {
             >
               <div className="hero-title-container">
                 <h1 className="hero-title">
-                  <span className="title-line">Exoplanet</span>
-                  <span className="title-line">Detection AI</span>
+                  <span className="title-line">DIANA</span>
                 </h1>
                 <div className="title-accent"></div>
               </div>
               <p className="hero-subtitle">
-                <span className="subtitle-text">Finding New Worlds with</span>
-                <span className="subtitle-highlight">Machine Learning</span>
+                <span className="subtitle-text">Hunting Exoplanets with</span>
+                <span className="subtitle-highlight">AI Precision</span>
               </p>
               <div className="hero-actions">
                 <Link
                   to="/explore"
                   className="btn btn-primary hero-btn-primary"
                 >
-                  <span className="btn-text">Explore Datasets</span>
+                  <span className="btn-text">Explore Data</span>
                   <div className="btn-glow"></div>
                 </Link>
                 <Link
                   to="/dashboard"
                   className="btn btn-secondary hero-btn-secondary"
                 >
-                  <span className="btn-text">View Demo</span>
+                  <span className="btn-text">Start Hunting</span>
                   <div className="btn-particles"></div>
                 </Link>
               </div>
@@ -397,22 +373,14 @@ const App = () => {
               <div className="space-dust"></div>
             </div>
           </div>
-          <div className="scroll-indicator" aria-hidden="true">
-            <div className="scroll-text">Scroll to explore</div>
-            <div className="scroll-arrow">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
         </section>
       </header>
 
       <main>
-        {/* Problem statement */}
+        {/* What DIANA Does */}
         <section className="section" id="challenge" data-section>
           <div className="container reveal">
-            <h2 className="section-title">The Challenge</h2>
+            <h2 className="section-title">What DIANA Does</h2>
             <div className="cards-grid three">
               {challengeCards.map((card, index) => (
                 <div
@@ -429,10 +397,10 @@ const App = () => {
           </div>
         </section>
 
-        {/* Solution process */}
+        {/* How DIANA Works */}
         <section className="section" id="approach" data-section>
           <div className="container reveal">
-            <h2 className="section-title">Our Approach</h2>
+            <h2 className="section-title">How DIANA Works</h2>
             <div className="process-flow glass-card">
               {processDescriptions.map((step) => (
                 <div key={step.title} className="process-step">
@@ -454,10 +422,10 @@ const App = () => {
         {/* Metrics with counters */}
         <section className="section" id="metrics" data-section>
           <div className="container reveal">
-            <h2 className="section-title">Mission Metrics</h2>
+            <h2 className="section-title">DIANA's Performance</h2>
             <p className="section-subtext">
-              Validated results tracked across nightly runs and real-world
-              deployments.
+              Proven results from extensive testing on real space mission data
+              and validated exoplanet datasets.
             </p>
             <div className="metrics-grid">
               {metrics.map((metric, index) => (
@@ -485,7 +453,7 @@ const App = () => {
         {/* Features */}
         <section className="section" id="features" data-section>
           <div className="container reveal">
-            <h2 className="section-title">Key Capabilities</h2>
+            <h2 className="section-title">DIANA's Capabilities</h2>
             <div className="cards-grid four">
               {featureCards.map((card) => (
                 <div key={card.title} className="glass-card feature-card">
@@ -497,206 +465,18 @@ const App = () => {
             </div>
           </div>
         </section>
-
-        {/* Demo placeholder */}
-        <section className="section" id="demo" data-section>
-          <div className="container reveal">
-            <h2 className="section-title">Live Demo Preview</h2>
-            <p className="section-subtext">
-              Simulate classifications before connecting to mission data feeds.
-            </p>
-            <div className="demo-area">
-              <div className="demo-visual glass-card" id="demo-visual">
-                <div className="demo-chart-container">
-                  <div className="chart-header">
-                    <h3>Light Curve Analysis</h3>
-                    <div className="chart-status">
-                      <div
-                        className={`status-indicator ${
-                          activeScenario === "planet"
-                            ? "planet-detected"
-                            : "false-positive"
-                        }`}
-                      ></div>
-                      <span>
-                        {activeScenario === "planet"
-                          ? "Exoplanet Detected"
-                          : "False Positive"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="chart-wrapper">
-                    <svg className="light-curve-chart" viewBox="0 0 400 200">
-                      <defs>
-                        <linearGradient
-                          id="chartGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="rgba(59, 130, 246, 0.8)"
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="rgba(16, 185, 129, 0.3)"
-                          />
-                        </linearGradient>
-                        <filter id="glow">
-                          <feGaussianBlur
-                            stdDeviation="3"
-                            result="coloredBlur"
-                          />
-                          <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                          </feMerge>
-                        </filter>
-                      </defs>
-                      <path
-                        className="light-curve-path"
-                        d={
-                          activeScenario === "planet"
-                            ? "M0,100 Q50,80 100,60 T200,40 T300,50 T400,70"
-                            : "M0,100 Q50,90 100,95 T200,85 T300,90 T400,88"
-                        }
-                        fill="none"
-                        stroke="url(#chartGradient)"
-                        strokeWidth="3"
-                        filter="url(#glow)"
-                      />
-                      <circle
-                        className="data-point"
-                        cx="200"
-                        cy={activeScenario === "planet" ? "40" : "85"}
-                        r="4"
-                        fill="#3b82f6"
-                      />
-                    </svg>
-                  </div>
-                  <div className="chart-legend">
-                    <div className="legend-item">
-                      <div className="legend-color planet"></div>
-                      <span>
-                        Transit Depth:{" "}
-                        {activeScenario === "planet" ? "2.1%" : "0.3%"}
-                      </span>
-                    </div>
-                    <div className="legend-item">
-                      <div className="legend-color noise"></div>
-                      <span>
-                        Noise Level:{" "}
-                        {activeScenario === "planet" ? "Low" : "High"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="demo-controls glass-card">
-                <div className="card-title">Sample Scenarios</div>
-                <p className="card-text">
-                  Select a scenario to preview confidence metrics from the AI
-                  pipeline.
-                </p>
-                <div className="demo-controls">
-                  <button
-                    type="button"
-                    className={`btn btn-secondary demo-btn ${
-                      activeScenario === "planet" ? "btn-active" : ""
-                    }`}
-                    onClick={() => setActiveScenario("planet")}
-                  >
-                    <span className="btn-icon">🪐</span>
-                    <span>Known Planet</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn btn-secondary demo-btn ${
-                      activeScenario === "falsePositive" ? "btn-active" : ""
-                    }`}
-                    onClick={() => setActiveScenario("falsePositive")}
-                  >
-                    <span className="btn-icon">⚠️</span>
-                    <span>False Positive</span>
-                  </button>
-                </div>
-                <div className="demo-output" id="demo-output">
-                  <div className="card-title">AI Prediction</div>
-                  <div className="prediction-metrics">
-                    <div className="metric-row">
-                      <span className="metric-label">Result:</span>
-                      <span
-                        className={`metric-value ${
-                          activeScenario === "planet" ? "success" : "warning"
-                        }`}
-                      >
-                        {activeScenarioData.result}
-                      </span>
-                    </div>
-                    <div className="metric-row">
-                      <span className="metric-label">Confidence:</span>
-                      <div className="confidence-bar">
-                        <div
-                          className="confidence-fill"
-                          style={{ width: activeScenarioData.confidence }}
-                        ></div>
-                        <span className="confidence-text">
-                          {activeScenarioData.confidence}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="metric-row">
-                      <span className="metric-label">Signal-to-Noise:</span>
-                      <span className="metric-value">
-                        {activeScenarioData.snr}
-                      </span>
-                    </div>
-                    <div className="metric-row">
-                      <span className="metric-label">Follow-up:</span>
-                      <span className="metric-text">
-                        {activeScenarioData.followUp}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Team section */}
-        <section className="section" id="team" data-section>
-          <div className="container reveal">
-            <h2 className="section-title">Meet the Crew</h2>
-            <p className="section-subtext">
-              Built at NASA Space Apps Challenge 2025 by interdisciplinary
-              explorers.
-            </p>
-            <div className="team-grid">
-              {teamMembers.map((member) => (
-                <div key={member.name} className="glass-card team-member">
-                  <img src={member.photo} alt={member.name} loading="lazy" />
-                  <div className="card-title">{member.name}</div>
-                  <div className="card-text">{member.role}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Footer call-to-action */}
       <footer className="footer-cta" data-section>
-        <h2 className="section-title">Ready to Discover New Worlds?</h2>
+        <h2 className="section-title">Ready to Hunt New Worlds?</h2>
         <p className="section-subtext">
-          Deploy ExoDetect AI with your mission data and accelerate the search
-          for habitable exoplanets.
+          Deploy DIANA AI with your mission data and accelerate the search for
+          habitable exoplanets.
         </p>
-        <a className="btn btn-primary btn-glow" href="/app">
-          Launch Application
-        </a>
+        <Link className="btn btn-primary btn-glow" to="/dashboard">
+          Start Hunting Exoplanets
+        </Link>
         <div className="footer-links">
           <a href="https://github.com" target="_blank" rel="noreferrer">
             GitHub
@@ -704,7 +484,7 @@ const App = () => {
           <a href="https://docs.nasa.gov" target="_blank" rel="noreferrer">
             Documentation
           </a>
-          <a href="mailto:contact@exodetect.ai">Contact</a>
+          <a href="mailto:contact@diana.ai">Contact</a>
         </div>
       </footer>
     </>
