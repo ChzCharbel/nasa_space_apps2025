@@ -1,9 +1,10 @@
 # main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.datasets import get_dataset_objects
+from services.analisis import analyze_observation, analyze_full_dataset
 
 app = FastAPI()
 
@@ -35,3 +36,20 @@ def predict(data: ExoplanetInput):
 @app.get("/datasets")
 def fetch_datasets():
     return get_dataset_objects()
+
+@app.post("/analyze-observation")
+async def handle_observation():
+    observation = "" # read body of request, should contain parameters in json obj
+
+    result = analyze_observation(observation)
+
+    return ""
+
+
+@app.post("/upload-csv")
+async def handle_dataset_upload(file: UploadFile = File(...)):
+    contents = await file.read()
+
+    result = analyze_full_dataset(contents)
+
+    return ""
