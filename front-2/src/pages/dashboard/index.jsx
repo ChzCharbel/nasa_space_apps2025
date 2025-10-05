@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import NavBar from "../../components/navbar";
+import AstronomicalDataInput from "../../components/AstronomicalDataInput";
+import DatasetActionButtons from "../../components/DatasetActionButtons";
 
 const Dashboard = () => {
   const [formData, setFormData] = useState({
@@ -101,8 +103,7 @@ const Dashboard = () => {
     setError("");
   };
 
-  const handleCSVUpload = (event) => {
-    const file = event.target.files[0];
+  const handleCSVUpload = (file) => {
     if (file && file.type === "text/csv") {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -155,10 +156,39 @@ const Dashboard = () => {
   };
 
   const selectDataset = (dataset) => {
-    // This would load the selected dataset into the form
-    // For now, we'll just show a message
+    // Load the selected dataset into the form
     setError(`Selected dataset: ${dataset.name}`);
-    setShowDatasetModal(false);
+
+    // Simulate loading dataset data into the form
+    // In a real implementation, this would fetch the dataset data
+    const mockData = {
+      kepler: {
+        mass: "1.2",
+        radius: "1.1",
+        temperature: "288",
+        orbitalPeriod: "365",
+        semiMajorAxis: "1.0",
+        eccentricity: "0.0167",
+        stellarMass: "1.0",
+        stellarRadius: "1.0",
+        stellarTemperature: "5778",
+      },
+      tess: {
+        mass: "2.5",
+        radius: "1.8",
+        temperature: "320",
+        orbitalPeriod: "180",
+        semiMajorAxis: "0.5",
+        eccentricity: "0.02",
+        stellarMass: "0.8",
+        stellarRadius: "0.9",
+        stellarTemperature: "5200",
+      },
+    };
+
+    if (mockData[dataset.id]) {
+      setFormData(mockData[dataset.id]);
+    }
   };
 
   return (
@@ -171,295 +201,19 @@ const Dashboard = () => {
           planet using our trained ML model.
         </p>
 
-        {/* Input Form */}
-        <div className="glass-card">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <h2
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                margin: 0,
-              }}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-              Astronomical Data Input
-            </h2>
-
-            <div className="form-actions-right">
-              <label
-                className="btn btn-secondary"
-                style={{ marginRight: "0.5rem", cursor: "pointer" }}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  style={{ marginRight: "0.5rem" }}
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14,2 14,8 20,8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10,9 9,9 8,9" />
-                </svg>
-                Upload CSV
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleCSVUpload}
-                  style={{ display: "none" }}
-                />
-              </label>
-
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={loadAvailableDatasets}
-                disabled={isLoadingDatasets}
-              >
-                {isLoadingDatasets ? (
-                  <>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      style={{
-                        animation: "spin 1s linear infinite",
-                        marginRight: "0.5rem",
-                      }}
-                    >
-                      <path d="M21 12a9 9 0 11-6.219-8.56" />
-                    </svg>
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      style={{ marginRight: "0.5rem" }}
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                    </svg>
-                    Choose Dataset
-                  </>
-                )}
-              </button>
-            </div>
+        {/* Input Form with Action Buttons */}
+        <div className="input-section">
+          <AstronomicalDataInput
+            formData={formData}
+            handleInputChange={handleInputChange}
+          />
+          <div className="action-buttons-container">
+            <DatasetActionButtons
+              onDatasetSelect={selectDataset}
+              onCSVUpload={handleCSVUpload}
+              isLoadingDatasets={isLoadingDatasets}
+            />
           </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAnalyze();
-            }}
-          >
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="mass">Mass (Earth masses) *</label>
-                <input
-                  type="number"
-                  id="mass"
-                  name="mass"
-                  value={formData.mass}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 1.0"
-                  step="0.1"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="radius">Radius (Earth radii) *</label>
-                <input
-                  type="number"
-                  id="radius"
-                  name="radius"
-                  value={formData.radius}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 1.0"
-                  step="0.1"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="temperature">Temperature (K) *</label>
-                <input
-                  type="number"
-                  id="temperature"
-                  name="temperature"
-                  value={formData.temperature}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 288"
-                  step="1"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="orbitalPeriod">Orbital Period (days) *</label>
-                <input
-                  type="number"
-                  id="orbitalPeriod"
-                  name="orbitalPeriod"
-                  value={formData.orbitalPeriod}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 365"
-                  step="0.1"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="semiMajorAxis">Semi-major Axis (AU)</label>
-                <input
-                  type="number"
-                  id="semiMajorAxis"
-                  name="semiMajorAxis"
-                  value={formData.semiMajorAxis}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 1.0"
-                  step="0.01"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="eccentricity">Eccentricity</label>
-                <input
-                  type="number"
-                  id="eccentricity"
-                  name="eccentricity"
-                  value={formData.eccentricity}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 0.0167"
-                  step="0.001"
-                  min="0"
-                  max="1"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="stellarMass">Stellar Mass (Solar masses)</label>
-                <input
-                  type="number"
-                  id="stellarMass"
-                  name="stellarMass"
-                  value={formData.stellarMass}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 1.0"
-                  step="0.1"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="stellarRadius">
-                  Stellar Radius (Solar radii)
-                </label>
-                <input
-                  type="number"
-                  id="stellarRadius"
-                  name="stellarRadius"
-                  value={formData.stellarRadius}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 1.0"
-                  step="0.1"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="stellarTemperature">
-                  Stellar Temperature (K)
-                </label>
-                <input
-                  type="number"
-                  id="stellarTemperature"
-                  name="stellarTemperature"
-                  value={formData.stellarTemperature}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 5778"
-                  step="1"
-                />
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={resetForm}
-                disabled={isAnalyzing}
-              >
-                Reset
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={isAnalyzing}
-              >
-                {isAnalyzing ? (
-                  <>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      style={{ animation: "spin 1s linear infinite" }}
-                    >
-                      <path d="M21 12a9 9 0 11-6.219-8.56" />
-                    </svg>
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M9 11l3 3L22 4" />
-                      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-                    </svg>
-                    Analyze Data
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
         </div>
 
         {/* Dataset Selection Modal */}
@@ -659,6 +413,25 @@ const Dashboard = () => {
       </div>
 
       <style jsx>{`
+        .input-section {
+          display: flex;
+          gap: 1.5rem;
+          align-items: flex-start;
+          margin-bottom: 2rem;
+        }
+
+        .input-section > :first-child {
+          flex: 1;
+          max-width: calc(100% - 220px); /* Leave space for buttons */
+        }
+
+        .action-buttons-container {
+          flex-shrink: 0;
+          margin-top: 0; /* Align with the top of the form */
+          min-width: 200px;
+          align-self: flex-start;
+        }
+
         .dashboard-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -668,7 +441,7 @@ const Dashboard = () => {
 
         .form-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           gap: 1rem;
           margin-bottom: 1.5rem;
         }
@@ -921,18 +694,46 @@ const Dashboard = () => {
         }
 
         @media (max-width: 1200px) {
+          .input-section {
+            gap: 1rem;
+          }
+
           .form-grid {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
           }
         }
 
         @media (max-width: 1024px) {
+          .input-section {
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .input-section > :first-child {
+            max-width: 100%;
+          }
+
+          .action-buttons-container {
+            margin-top: 0;
+            align-self: center;
+          }
+
           .form-grid {
             grid-template-columns: repeat(3, 1fr);
           }
         }
 
         @media (max-width: 768px) {
+          .input-section {
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .action-buttons-container {
+            margin-top: 0;
+            align-self: stretch;
+          }
+
           .dashboard-grid {
             grid-template-columns: 1fr;
           }
