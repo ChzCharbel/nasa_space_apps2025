@@ -1,192 +1,192 @@
 .form-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem; /* Reduced */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Reduced */
+}
+
+/* Top section - 4 columns, denser grid */
+.top-fields-grid {
+  display: grid;
+  max-width: 20rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem; /* Reduced spacing */
+  margin-bottom: 0.5rem;
+}
+
+/* Secondary section */
+.secondary-fields {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.secondary-fields.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.secondary-fields.expanded {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.secondary-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+/* Form groups more compact */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* Much tighter */
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.75rem; /* Slightly smaller text */
+  line-height: 1.1;
+}
+
+/* Compact inputs */
+.form-group input {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-button);
+  background: rgba(26, 31, 58, 0.5);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  height: 28px; /* Reduced from 36px */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.form-group input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Buttons section - slimmer and tighter */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+/* Buttons smaller and denser */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem; /* Reduced padding */
+  border-radius: var(--radius-button);
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  height: 34px; /* Reduced from 40px */
+}
+
+/* Button variants */
+.btn-secondary {
+  background: rgba(26, 31, 58, 0.5);
+  color: var(--text-primary);
+  border-color: var(--glass-border);
+}
+
+.btn-secondary:hover {
+  background: rgba(26, 31, 58, 0.7);
+  border-color: var(--accent-blue);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-green), #059669);
+  color: white;
+  border-color: var(--accent-green);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, var(--accent-green));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
   }
-  
-  /* Top section - 4 columns, denser grid */
-  .top-fields-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.5rem; /* Reduced spacing */
-    margin-bottom: 0.5rem;
+  to {
+    transform: rotate(360deg);
   }
-  
-  /* Secondary section */
-  .secondary-fields {
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-  
-  .secondary-fields.collapsed {
-    max-height: 0;
-    opacity: 0;
-  }
-  
-  .secondary-fields.expanded {
-    max-height: 1000px;
-    opacity: 1;
-  }
-  
+}
+
+/* Responsive compact layout */
+@media (max-width: 1200px) {
+  .top-fields-grid,
   .secondary-fields-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--glass-border);
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  /* Form groups more compact */
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem; /* Much tighter */
+}
+
+@media (max-width: 768px) {
+  .top-fields-grid,
+  .secondary-fields-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .form-group label {
-    font-weight: 500;
-    color: var(--text-primary);
-    font-size: 0.75rem; /* Slightly smaller text */
-    line-height: 1.1;
-  }
-  
-  /* Compact inputs */
-  .form-group input {
-    padding: 0.35rem 0.5rem;
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-button);
-    background: rgba(26, 31, 58, 0.5);
-    color: var(--text-primary);
-    font-size: 0.8rem;
-    height: 28px; /* Reduced from 36px */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .form-group input:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
-  }
-  
-  .form-group input::placeholder {
-    color: var(--text-secondary);
-  }
-  
-  /* Buttons section - slimmer and tighter */
+
   .form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--glass-border);
-  }
-  
-  /* Buttons smaller and denser */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     gap: 0.4rem;
-    padding: 0.5rem 1rem; /* Reduced padding */
-    border-radius: var(--radius-button);
-    border: 1px solid transparent;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    height: 34px; /* Reduced from 40px */
   }
-  
-  /* Button variants */
-  .btn-secondary {
-    background: rgba(26, 31, 58, 0.5);
-    color: var(--text-primary);
-    border-color: var(--glass-border);
+
+  .btn {
+    width: 100%;
+    justify-content: center;
   }
-  
-  .btn-secondary:hover {
-    background: rgba(26, 31, 58, 0.7);
-    border-color: var(--accent-blue);
+}
+
+@media (max-width: 480px) {
+  .top-fields-grid,
+  .secondary-fields-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent-green), #059669);
-    color: white;
-    border-color: var(--accent-green);
-    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+
+  .form-group label {
+    font-size: 0.7rem;
   }
-  
-  .btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, #059669, var(--accent-green));
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+
+  .form-group input {
+    font-size: 0.75rem;
+    height: 26px;
+    padding: 0.3rem 0.45rem;
   }
-  
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+
+  .btn {
+    height: 32px;
+    font-size: 0.75rem;
+    padding: 0.45rem 1rem;
   }
-  
-  /* Spinner animation */
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  /* Responsive compact layout */
-  @media (max-width: 1200px) {
-    .top-fields-grid,
-    .secondary-fields-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .top-fields-grid,
-    .secondary-fields-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  
-    .form-actions {
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-  
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .top-fields-grid,
-    .secondary-fields-grid {
-      grid-template-columns: 1fr;
-    }
-  
-    .form-group label {
-      font-size: 0.7rem;
-    }
-  
-    .form-group input {
-      font-size: 0.75rem;
-      height: 26px;
-      padding: 0.3rem 0.45rem;
-    }
-  
-    .btn {
-      height: 32px;
-      font-size: 0.75rem;
-      padding: 0.45rem 1rem;
-    }
-  }
-  
+}
