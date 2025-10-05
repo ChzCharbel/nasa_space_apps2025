@@ -6,6 +6,7 @@ const DatasetActionButtons = ({
   isLoadingDatasets = false,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [datasetSelected, setDatasetSelected] = useState(null);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
 
@@ -15,7 +16,16 @@ const DatasetActionButtons = ({
       name: "Kepler",
       description: "Kepler mission exoplanet data",
     },
-    { id: "tess", name: "TESS", description: "TESS mission exoplanet data" },
+    {
+      id: "k2",
+      name: "K2",
+      description: "Kepler mission extended data"
+    },
+    { 
+      id: "tess", 
+      name: "TESS", 
+      description: "TESS mission exoplanet data" 
+    }
   ];
 
   // Handle click outside to close dropdown
@@ -49,7 +59,10 @@ const DatasetActionButtons = ({
   };
 
   const handleDatasetClick = (dataset) => {
-    onDatasetSelect(dataset);
+    // onDatasetSelect(dataset);
+    setDatasetSelected(dataset.id);
+    // call to backend to pull dataset
+    
     setShowDropdown(false);
   };
 
@@ -136,6 +149,7 @@ const DatasetActionButtons = ({
                   <h4>{dataset.name}</h4>
                   <p>{dataset.description}</p>
                 </div>
+                {dataset.}
                 <svg
                   width="16"
                   height="16"

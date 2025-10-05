@@ -3,7 +3,7 @@ import React from "react";
 const AstronomicalDataInput = ({
   formData,
   handleInputChange,
-  handleAnalyze,
+  handleAnalyzeObservation,
   isAnalyzing,
 }) => {
   return (
@@ -166,7 +166,7 @@ const AstronomicalDataInput = ({
         <button
           type="button"
           className="btn btn-primary"
-          onClick={handleAnalyze}
+          onClick={handleAnalyzeObservation}
           disabled={isAnalyzing}
         >
           {isAnalyzing ? (
